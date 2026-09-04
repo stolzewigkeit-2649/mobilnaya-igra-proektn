@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 
 const ART_URL =
@@ -86,7 +87,8 @@ const HeroCard = ({ onPlay, onMenu, onAuth, playerName, chapter, weight }: HeroC
         </div>
 
         {/* menu */}
-        <nav className="row-start-3 grid w-full max-w-[430px] grid-cols-4 gap-2.5 animate-fade [animation-delay:.4s]">
+        <div className="row-start-3">
+        <nav className="grid w-full max-w-[430px] grid-cols-4 gap-2.5 animate-fade [animation-delay:.4s]">
           {MENU.map((item) => (
             <button
               key={item.key}
@@ -99,6 +101,17 @@ const HeroCard = ({ onPlay, onMenu, onAuth, playerName, chapter, weight }: HeroC
             </button>
           ))}
         </nav>
+
+        <div className="mt-3 w-full max-w-[430px] animate-fade [animation-delay:.5s]">
+          <Link
+            to="/privacy"
+            className="inline-flex items-center gap-1.5 text-[0.68rem] font-semibold text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <Icon name="ShieldCheck" size={13} className="text-ink" />
+            Политика конфиденциальности
+          </Link>
+        </div>
+        </div>
       </div>
     </section>
   );

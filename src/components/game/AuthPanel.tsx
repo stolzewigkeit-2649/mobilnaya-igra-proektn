@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import type { Player, Provider } from '@/hooks/use-auth';
 
@@ -120,6 +121,15 @@ const AuthPanel = ({
             {line}
           </li>
         ))}
+        <li>
+          <Link
+            to="/privacy"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink underline-offset-4 hover:underline"
+          >
+            Полная политика конфиденциальности
+            <Icon name="ArrowRight" size={13} />
+          </Link>
+        </li>
       </ul>
     </div>
   );
