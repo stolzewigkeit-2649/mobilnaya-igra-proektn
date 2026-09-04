@@ -9,9 +9,10 @@ import { toast } from '@/hooks/use-toast';
 type PlayPanelProps = {
   difficulty: Difficulty;
   onOpenSettings: () => void;
+  onOpenCharacter: () => void;
 };
 
-const PlayPanel = ({ difficulty, onOpenSettings }: PlayPanelProps) => {
+const PlayPanel = ({ difficulty, onOpenSettings, onOpenCharacter }: PlayPanelProps) => {
   const [kindId, setKindId] = useState(NECRO_KINDS[0].id);
   const kind = NECRO_KINDS.find((k) => k.id === kindId)!;
   const diff = DIFFICULTY_INFO[difficulty];
@@ -49,6 +50,25 @@ const PlayPanel = ({ difficulty, onOpenSettings }: PlayPanelProps) => {
             </button>
           ))}
         </div>
+
+        <button
+          type="button"
+          onClick={onOpenCharacter}
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-all tile-surface hover:brightness-125"
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <Icon name="UserRoundCog" size={17} strokeWidth={1.6} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-display text-sm font-bold text-foreground">
+              Настроить внешность
+            </span>
+            <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
+              Конструктор героя: плоть, облачение, аура
+            </span>
+          </span>
+          <Icon name="ChevronRight" size={16} className="shrink-0 text-ink" />
+        </button>
 
         <div key={kind.id} className="animate-fade-in rounded-xl border border-border bg-card/60 p-4">
           <p className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-muted-foreground">

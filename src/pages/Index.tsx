@@ -7,10 +7,11 @@ import RulesPanel from '@/components/game/RulesPanel';
 import SettingsPanel from '@/components/game/SettingsPanel';
 import AwardsPanel from '@/components/game/AwardsPanel';
 import AuthPanel from '@/components/game/AuthPanel';
+import CharacterCreator from '@/components/game/character/CharacterCreator';
 import { useGameSettings } from '@/hooks/use-game-settings';
 import { useAuth } from '@/hooks/use-auth';
 
-type ScreenKey = MenuKey | 'play' | 'auth' | null;
+type ScreenKey = MenuKey | 'play' | 'auth' | 'character' | null;
 
 const Index = () => {
   const [screen, setScreen] = useState<ScreenKey>(null);
@@ -43,7 +44,18 @@ const Index = () => {
         <PlayPanel
           difficulty={settings.difficulty}
           onOpenSettings={() => setScreen('settings')}
+          onOpenCharacter={() => setScreen('character')}
         />
+      </GameDialog>
+
+      <GameDialog
+        open={screen === 'character'}
+        onOpenChange={close}
+        icon="UserRoundCog"
+        title="Конструктор героя"
+        description="Собери облик некроманта: плоть, шрамы, облачение фракции и ауру порчи."
+      >
+        <CharacterCreator />
       </GameDialog>
 
       <GameDialog
