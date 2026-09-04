@@ -1,0 +1,36 @@
+{
+  "tests": [
+    {
+      "name": "Список сервисов входа",
+      "method": "GET",
+      "path": "/?action=providers",
+      "expectedStatus": 200,
+      "expectedBody": {},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Без токена игрок пустой",
+      "method": "GET",
+      "path": "/?action=me",
+      "expectedStatus": 200,
+      "expectedBody": {"player": null},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Неизвестный провайдер отклоняется",
+      "method": "GET",
+      "path": "/?action=start&provider=myspace&back=https://example.com",
+      "expectedStatus": 400,
+      "expectedBody": {"error": "string"},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Выход всегда успешен",
+      "method": "POST",
+      "path": "/?action=logout",
+      "expectedStatus": 200,
+      "expectedBody": {"ok": true},
+      "bodyMatcher": "partial"
+    }
+  ]
+}

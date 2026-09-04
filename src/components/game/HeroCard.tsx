@@ -8,6 +8,8 @@ export type MenuKey = 'scores' | 'rules' | 'settings' | 'awards';
 type HeroCardProps = {
   onPlay: () => void;
   onMenu: (key: MenuKey) => void;
+  onAuth: () => void;
+  playerName: string | null;
   chapter: string;
   weight: string;
 };
@@ -19,7 +21,7 @@ const MENU: { key: MenuKey; label: string; icon: string }[] = [
   { key: 'awards', label: 'Награды', icon: 'Star' },
 ];
 
-const HeroCard = ({ onPlay, onMenu, chapter, weight }: HeroCardProps) => {
+const HeroCard = ({ onPlay, onMenu, onAuth, playerName, chapter, weight }: HeroCardProps) => {
   return (
     <section
       className="relative z-10 flex h-full max-h-[640px] w-full max-w-[1112px] animate-rise flex-col overflow-hidden rounded-lg panel-surface"
@@ -39,10 +41,20 @@ const HeroCard = ({ onPlay, onMenu, chapter, weight }: HeroCardProps) => {
       <div className="relative grid h-full w-full grid-rows-[auto_1fr_auto] px-6 pb-7 pt-8 sm:px-9 md:w-[610px] md:px-[52px] md:pb-10 md:pt-[46px]">
         {/* logo */}
         <header className="row-start-1 animate-fade [animation-delay:.1s]">
-          <span className="inline-flex items-center gap-2.5 rounded-full bg-secondary px-4 py-2 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-foreground shadow-[inset_0_0_0_1px_hsl(var(--border))] sm:text-xs">
-            <span className="h-[7px] w-[7px] animate-pulse-glow rounded-full bg-ink shadow-[0_0_10px_hsl(var(--btn-hi))]" />
-            Открытый мир · 16+
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2.5 rounded-full bg-secondary px-4 py-2 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-foreground shadow-[inset_0_0_0_1px_hsl(var(--border))] sm:text-xs">
+              <span className="h-[7px] w-[7px] animate-pulse-glow rounded-full bg-ink shadow-[0_0_10px_hsl(var(--btn-hi))]" />
+              Открытый мир · 16+
+            </span>
+            <button
+              type="button"
+              onClick={onAuth}
+              className="inline-flex max-w-full items-center gap-2 rounded-full bg-secondary px-4 py-2 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-muted-foreground shadow-[inset_0_0_0_1px_hsl(var(--border))] transition-colors hover:text-foreground sm:text-xs"
+            >
+              <Icon name={playerName ? 'UserCheck' : 'LogIn'} size={13} className="shrink-0 text-ink" />
+              <span className="truncate">{playerName ?? 'Войти'}</span>
+            </button>
+          </div>
           <h1 className="mt-4 font-display text-[2.15rem] font-extrabold leading-[1.06] tracking-[-0.015em] sm:mt-5 sm:text-5xl md:text-[56px]">
             Requiem
             <span className="block italic text-ink">pro Veritate</span>

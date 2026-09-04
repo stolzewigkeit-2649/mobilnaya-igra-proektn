@@ -6,13 +6,16 @@ import ScoresPanel from '@/components/game/ScoresPanel';
 import RulesPanel from '@/components/game/RulesPanel';
 import SettingsPanel from '@/components/game/SettingsPanel';
 import AwardsPanel from '@/components/game/AwardsPanel';
+import AuthPanel from '@/components/game/AuthPanel';
 import { useGameSettings } from '@/hooks/use-game-settings';
+import { useAuth } from '@/hooks/use-auth';
 
-type ScreenKey = MenuKey | 'play' | null;
+type ScreenKey = MenuKey | 'play' | 'auth' | null;
 
 const Index = () => {
   const [screen, setScreen] = useState<ScreenKey>(null);
   const { settings, update, reset } = useGameSettings();
+  const auth = useAuth();
 
   const close = () => setScreen(null);
 
@@ -22,8 +25,10 @@ const Index = () => {
       <div className="pointer-events-none absolute inset-0 scene-grid" />
 
       <HeroCard
-        onPlay={() => setScreen('play')}
+        onPlay={() => setScreen(auth.player ? 'play' : 'auth')}
         onMenu={(key) => setScreen(key)}
+        onAuth={() => setScreen('auth')}
+        playerName={auth.player?.nickname ?? null}
         chapter="Глава I. Пепел храма"
         weight="2.4 ГБ"
       />
@@ -79,6 +84,24 @@ const Index = () => {
         description="Дары, титулы и скины за настойчивость в поиске правды."
       >
         <AwardsPanel />
+      </GameDialog>
+
+      <GameDialog
+        open={screen === 'auth'}
+        onOpenChange={close}
+        icon="KeyRound"
+        title="Вход в обитель"
+        description="Выбери привычный сервис. Пароль вводится только у него — игра личных данных не получает."
+      >
+        <AuthPanel
+          player={auth.player}
+          providers={auth.providers}
+          loading={auth.loading}
+          pending={auth.pending}
+          error={auth.error}
+          onLogin={auth.login}
+          onLogout={auth.logout}
+        />
       </GameDialog>
     </main>
   );
