@@ -4,89 +4,94 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Порча — тёмная палитра Requiem pro Veritate */
+    --background: 135 25% 3%;
+    --foreground: 110 32% 93%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 143 24% 7%;
+    --card-foreground: 110 32% 93%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 143 24% 7%;
+    --popover-foreground: 110 32% 93%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 129 34% 46%;
+    --primary-foreground: 138 45% 4%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 143 29% 9%;
+    --secondary-foreground: 110 32% 93%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 143 29% 9%;
+    --muted-foreground: 123 8% 58%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 131 29% 12%;
+    --accent-foreground: 128 40% 73%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 4 62% 42%;
+    --destructive-foreground: 110 32% 93%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 140 23% 15%;
+    --input: 140 23% 15%;
+    --ring: 128 53% 73%;
 
-    --radius: 0.5rem;
+    --radius: 1.375rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* доп. токены экрана (из hero-исходника) */
+    --ink: 128 40% 73%;
+    --btn-hi: 128 53% 73%;
+    --btn-lo: 132 42% 30%;
+    --tile: 143 29% 9%;
+    --glow: 139 46% 27%;
+    --vignette: 144 71% 1%;
+    --scrim: 140 38% 3%;
+    --card-top: 147 33% 11%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 143 24% 7%;
+    --sidebar-foreground: 110 32% 93%;
+    --sidebar-primary: 129 34% 46%;
+    --sidebar-primary-foreground: 138 45% 4%;
+    --sidebar-accent: 131 29% 12%;
+    --sidebar-accent-foreground: 128 40% 73%;
+    --sidebar-border: 140 23% 15%;
+    --sidebar-ring: 128 53% 73%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 135 25% 3%;
+    --foreground: 110 32% 93%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 143 24% 7%;
+    --card-foreground: 110 32% 93%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 143 24% 7%;
+    --popover-foreground: 110 32% 93%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 129 34% 46%;
+    --primary-foreground: 138 45% 4%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 143 29% 9%;
+    --secondary-foreground: 110 32% 93%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 143 29% 9%;
+    --muted-foreground: 123 8% 58%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 131 29% 12%;
+    --accent-foreground: 128 40% 73%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 4 62% 42%;
+    --destructive-foreground: 110 32% 93%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 140 23% 15%;
+    --input: 140 23% 15%;
+    --ring: 128 53% 73%;
+
+    --sidebar-background: 143 24% 7%;
+    --sidebar-foreground: 110 32% 93%;
+    --sidebar-primary: 129 34% 46%;
+    --sidebar-primary-foreground: 138 45% 4%;
+    --sidebar-accent: 131 29% 12%;
+    --sidebar-accent-foreground: 128 40% 73%;
+    --sidebar-border: 140 23% 15%;
+    --sidebar-ring: 128 53% 73%;
   }
 }
 
@@ -95,7 +100,100 @@
     @apply border-border;
   }
 
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    overflow: hidden;
+  }
+}
+
+@layer components {
+  /* фон сцены: свечение + сетка руин */
+  .scene-glow {
+    background:
+      radial-gradient(
+        120% 90% at 50% 0%,
+        hsl(var(--glow) / 0.34) 0%,
+        transparent 62%
+      ),
+      radial-gradient(
+        80% 70% at 15% 100%,
+        hsl(var(--primary) / 0.12) 0%,
+        transparent 70%
+      ),
+      hsl(var(--vignette));
+  }
+
+  .scene-grid {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(
+      70% 60% at 50% 50%,
+      #000 0%,
+      transparent 78%
+    );
+    mask-image: radial-gradient(70% 60% at 50% 50%, #000 0%, transparent 78%);
+    opacity: 0.5;
+  }
+
+  .panel-surface {
+    background: linear-gradient(
+      160deg,
+      hsl(var(--card-top)) 0%,
+      hsl(var(--card)) 46%,
+      hsl(var(--background)) 100%
+    );
+    box-shadow:
+      0 40px 120px -30px hsl(var(--vignette)),
+      0 0 0 1px hsl(var(--border));
+  }
+
+  .art-scrim {
+    background:
+      linear-gradient(
+        90deg,
+        hsl(var(--scrim)) 0%,
+        hsl(var(--scrim) / 0.78) 34%,
+        transparent 72%
+      ),
+      linear-gradient(0deg, hsl(var(--scrim) / 0.88) 0%, transparent 40%);
+  }
+
+  .btn-play-surface {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--btn-hi)) 0%,
+      hsl(var(--primary)) 46%,
+      hsl(var(--btn-lo)) 100%
+    );
+    box-shadow:
+      0 18px 44px -14px hsl(var(--primary)),
+      inset 0 1px 0 hsl(var(--foreground) / 0.35);
+  }
+
+  .tile-surface {
+    background: hsl(var(--tile));
+    box-shadow: inset 0 0 0 1px hsl(var(--border));
+  }
+
+  .hairline {
+    background: linear-gradient(90deg, hsl(var(--border)), transparent);
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
   }
 }

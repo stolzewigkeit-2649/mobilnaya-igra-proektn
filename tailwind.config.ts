@@ -18,7 +18,13 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['"Exo 2"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+				display: ['"Exo 2"', 'ui-sans-serif', 'sans-serif']
+			},
 			colors: {
+				ink: 'hsl(var(--ink))',
+				tile: 'hsl(var(--tile))',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -84,11 +90,41 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				rise: {
+					from: { opacity: '0', transform: 'translateY(18px) scale(.99)' },
+					to: { opacity: '1', transform: 'none' }
+				},
+				fade: {
+					from: { opacity: '0', transform: 'translateY(10px)' },
+					to: { opacity: '1', transform: 'none' }
+				},
+				'fade-in': {
+					from: { opacity: '0', transform: 'translateY(8px)' },
+					to: { opacity: '1', transform: 'none' }
+				},
+				'scale-in': {
+					from: { opacity: '0', transform: 'scale(.96)' },
+					to: { opacity: '1', transform: 'none' }
+				},
+				'slide-in-right': {
+					from: { opacity: '0', transform: 'translateX(24px)' },
+					to: { opacity: '1', transform: 'none' }
+				},
+				'pulse-glow': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '.55' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				rise: 'rise .8s cubic-bezier(.2,.8,.25,1) both',
+				fade: 'fade .7s both',
+				'fade-in': 'fade-in .3s ease-out both',
+				'scale-in': 'scale-in .2s ease-out both',
+				'slide-in-right': 'slide-in-right .3s ease-out both',
+				'pulse-glow': 'pulse-glow 2.4s ease-in-out infinite'
 			}
 		}
 	},
