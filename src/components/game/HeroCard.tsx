@@ -4,7 +4,7 @@ import Icon from '@/components/ui/icon';
 const ART_URL =
   'https://cdn.poehali.dev/projects/c4458224-623b-48e2-87b6-15ecc04308fd/files/a670e2cd-9df9-48ae-b41e-77203041c657.jpg';
 
-export type MenuKey = 'scores' | 'rules' | 'settings' | 'awards';
+export type MenuKey = 'scores' | 'rules' | 'lore' | 'settings' | 'awards';
 
 type HeroCardProps = {
   onPlay: () => void;
@@ -18,6 +18,7 @@ type HeroCardProps = {
 const MENU: { key: MenuKey; label: string; icon: string }[] = [
   { key: 'scores', label: 'Рекорды', icon: 'Trophy' },
   { key: 'rules', label: 'Правила', icon: 'ScrollText' },
+  { key: 'lore', label: 'Мир', icon: 'BookOpen' },
   { key: 'settings', label: 'Настройки', icon: 'Settings' },
   { key: 'awards', label: 'Награды', icon: 'Star' },
 ];
@@ -88,15 +89,15 @@ const HeroCard = ({ onPlay, onMenu, onAuth, playerName, chapter, weight }: HeroC
 
         {/* menu */}
         <div className="row-start-3">
-        <nav className="grid w-full max-w-[430px] grid-cols-4 gap-2.5 animate-fade [animation-delay:.4s]">
+        <nav className="grid w-full max-w-[430px] grid-cols-3 gap-2 animate-fade [animation-delay:.4s] sm:grid-cols-5 sm:gap-2.5">
           {MENU.map((item) => (
             <button
               key={item.key}
               type="button"
               onClick={() => onMenu(item.key)}
-              className="flex flex-col items-center gap-1.5 rounded-xl px-1.5 pb-2.5 pt-3 text-[0.68rem] font-semibold tracking-[0.04em] text-muted-foreground transition-colors tile-surface hover:text-foreground sm:text-[0.72rem]"
+              className="flex flex-col items-center gap-1.5 rounded-xl px-1 pb-2.5 pt-3 text-[0.66rem] font-semibold leading-tight tracking-[0.02em] text-muted-foreground transition-colors tile-surface hover:text-foreground sm:text-[0.7rem]"
             >
-              <Icon name={item.icon} size={19} className="text-ink" strokeWidth={1.6} />
+              <Icon name={item.icon} size={18} className="text-ink" strokeWidth={1.6} />
               {item.label}
             </button>
           ))}

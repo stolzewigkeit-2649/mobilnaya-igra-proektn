@@ -4,15 +4,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { NECRO_KINDS, REGIONS, DEITIES } from '@/data/game';
 import { DIFFICULTY_INFO, type Difficulty } from '@/hooks/use-game-settings';
-import { toast } from '@/hooks/use-toast';
 
 type PlayPanelProps = {
   difficulty: Difficulty;
+  hasSave: boolean;
   onOpenSettings: () => void;
   onOpenCharacter: () => void;
+  onStartStory: () => void;
+  onResetStory: () => void;
 };
 
-const PlayPanel = ({ difficulty, onOpenSettings, onOpenCharacter }: PlayPanelProps) => {
+const PlayPanel = ({
+  difficulty,
+  hasSave,
+  onOpenSettings,
+  onOpenCharacter,
+  onStartStory,
+  onResetStory,
+}: PlayPanelProps) => {
   const [kindId, setKindId] = useState(NECRO_KINDS[0].id);
   const kind = NECRO_KINDS.find((k) => k.id === kindId)!;
   const diff = DIFFICULTY_INFO[difficulty];
@@ -94,7 +103,7 @@ const PlayPanel = ({ difficulty, onOpenSettings, onOpenCharacter }: PlayPanelPro
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-3">
           <button
             type="button"
             onClick={onOpenSettings}
@@ -103,19 +112,31 @@ const PlayPanel = ({ difficulty, onOpenSettings, onOpenCharacter }: PlayPanelPro
             <Icon name={diff.icon} size={14} />
             Сложность: {diff.name} · очки {diff.multiplier}
           </button>
+
           <button
             type="button"
-            onClick={() =>
-              toast({
-                title: `${kind.name} выходит из скита`,
-                description: `Глава I. Пепел храма · сложность «${diff.name}». Сохранение создано.`,
-              })
-            }
-            className="flex h-11 items-center justify-center gap-2.5 rounded-lg px-6 font-display text-sm font-extrabold uppercase tracking-[0.18em] text-primary-foreground transition-transform btn-play-surface hover:scale-[1.02]"
+            onClick={onStartStory}
+            className="flex h-12 w-full items-center justify-center gap-2.5 rounded-lg px-6 font-display text-sm font-extrabold uppercase tracking-[0.16em] text-primary-foreground transition-transform btn-play-surface hover:scale-[1.01]"
           >
-            <Icon name="Play" size={15} className="fill-current" />
-            Начать
+            <Icon name={hasSave ? 'Play' : 'Flame'} size={15} className="fill-current" />
+            {hasSave ? 'Продолжить главу I' : 'Начать главу I'}
           </button>
+
+          {hasSave ? (
+            <button
+              type="button"
+              onClick={onResetStory}
+              className="flex w-full items-center justify-center gap-2 text-xs text-muted-foreground underline-offset-4 hover:text-destructive hover:underline"
+            >
+              <Icon name="RotateCcw" size={13} />
+              Сбросить прохождение и начать с ночи пожара
+            </button>
+          ) : (
+            <p className="text-center text-xs leading-relaxed text-muted-foreground">
+              Текстовое демо: {kind.name} уходит из скита Ври. Выборы необратимы, прогресс
+              сохраняется на этом устройстве.
+            </p>
+          )}
         </div>
       </TabsContent>
 

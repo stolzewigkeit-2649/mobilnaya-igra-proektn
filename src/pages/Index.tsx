@@ -6,19 +6,39 @@ import ScoresPanel from '@/components/game/ScoresPanel';
 import RulesPanel from '@/components/game/RulesPanel';
 import SettingsPanel from '@/components/game/SettingsPanel';
 import AwardsPanel from '@/components/game/AwardsPanel';
+import LorePanel from '@/components/game/lore/LorePanel';
 import AuthPanel from '@/components/game/AuthPanel';
 import CharacterCreator from '@/components/game/character/CharacterCreator';
+import StoryGame from '@/components/game/story/StoryGame';
 import { useGameSettings } from '@/hooks/use-game-settings';
 import { useAuth } from '@/hooks/use-auth';
+import { clearStorySave, readStorySave } from '@/hooks/use-story';
 
 type ScreenKey = MenuKey | 'play' | 'auth' | 'character' | null;
 
 const Index = () => {
   const [screen, setScreen] = useState<ScreenKey>(null);
+  const [story, setStory] = useState(false);
+  const [hasSave, setHasSave] = useState(() => readStorySave() !== null);
   const { settings, update, reset } = useGameSettings();
   const auth = useAuth();
 
   const close = () => setScreen(null);
+
+  const openStory = () => {
+    setScreen(null);
+    setStory(true);
+  };
+
+  const closeStory = () => {
+    setStory(false);
+    setHasSave(readStorySave() !== null);
+  };
+
+  const resetStory = () => {
+    clearStorySave();
+    setHasSave(false);
+  };
 
   return (
     <main className="relative flex h-full w-full items-center justify-center overflow-hidden bg-background p-3 sm:p-6">
@@ -43,8 +63,11 @@ const Index = () => {
       >
         <PlayPanel
           difficulty={settings.difficulty}
+          hasSave={hasSave}
           onOpenSettings={() => setScreen('settings')}
           onOpenCharacter={() => setScreen('character')}
+          onStartStory={openStory}
+          onResetStory={resetStory}
         />
       </GameDialog>
 
@@ -76,6 +99,16 @@ const Index = () => {
         description="Управление, дознание, смерть и путь к Шпилю Лжебога."
       >
         <RulesPanel />
+      </GameDialog>
+
+      <GameDialog
+        open={screen === 'lore'}
+        onOpenChange={close}
+        icon="BookOpen"
+        title="Мир Requiem"
+        description="Пантеон, хроника аврамистов и четыре силы, что делят землю за стенами Шпиля."
+      >
+        <LorePanel />
       </GameDialog>
 
       <GameDialog
@@ -115,6 +148,8 @@ const Index = () => {
           onLogout={auth.logout}
         />
       </GameDialog>
+
+      {story && <StoryGame difficulty={settings.difficulty} onExit={closeStory} />}
     </main>
   );
 };
