@@ -1,0 +1,7 @@
+{
+  "tests": [
+    {"name": "CORS preflight", "method": "OPTIONS", "path": "/", "expectedStatus": 200},
+    {"name": "Без токена", "method": "GET", "path": "/", "expectedStatus": 401, "expectedBody": {"error": "no_token"}, "bodyMatcher": "partial"},
+    {"name": "Чужой токен", "method": "GET", "path": "/", "headers": {"X-Auth-Token": "fake"}, "expectedStatus": 401, "expectedBody": {"error": "bad_token"}, "bodyMatcher": "partial"}
+  ]
+}

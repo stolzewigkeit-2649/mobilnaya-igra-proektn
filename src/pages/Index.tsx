@@ -2,42 +2,47 @@ import { useState } from 'react';
 import HeroCard, { type MenuKey } from '@/components/game/HeroCard';
 import GameDialog from '@/components/game/GameDialog';
 import PlayPanel from '@/components/game/PlayPanel';
-import ScoresPanel from '@/components/game/ScoresPanel';
-import RulesPanel from '@/components/game/RulesPanel';
-import SettingsPanel from '@/components/game/SettingsPanel';
-import AwardsPanel from '@/components/game/AwardsPanel';
-import LorePanel from '@/components/game/lore/LorePanel';
+import MenuDialogs from '@/components/game/MenuDialogs';
 import AuthPanel from '@/components/game/AuthPanel';
 import CharacterCreator from '@/components/game/character/CharacterCreator';
 import StoryGame from '@/components/game/story/StoryGame';
+import ArchetypeSelect from '@/components/game/archetype/ArchetypeSelect';
+import ArchetypeEditor from '@/components/game/archetype/ArchetypeEditor';
 import { useGameSettings } from '@/hooks/use-game-settings';
 import { useAuth } from '@/hooks/use-auth';
-import { clearStorySave, readStorySave } from '@/hooks/use-story';
+import { ProfileProvider, useProfile } from '@/contexts/ProfileContext';
+import { resolveChoice } from '@/data/archetypes';
 
-type ScreenKey = MenuKey | 'play' | 'auth' | 'character' | null;
+type ScreenKey = MenuKey | 'play' | 'auth' | 'character' | 'select' | 'editor' | null;
 
-const Index = () => {
+type Auth = ReturnType<typeof useAuth>;
+
+const IndexScreen = ({ auth }: { auth: Auth }) => {
   const [screen, setScreen] = useState<ScreenKey>(null);
+  const [back, setBack] = useState<ScreenKey>(null);
   const [story, setStory] = useState(false);
-  const [hasSave, setHasSave] = useState(() => readStorySave() !== null);
-  const { settings, update, reset } = useGameSettings();
-  const auth = useAuth();
+  const game = useGameSettings();
+  const profile = useProfile();
+  const hasSave = profile.story !== null;
+  const hero = profile.archetype ? resolveChoice(profile.archetype) : null;
 
   const close = () => setScreen(null);
+
+  const go = (next: ScreenKey) => {
+    setBack(screen);
+    setScreen(next);
+  };
+
+  const goBack = (fallback: ScreenKey) => {
+    setScreen(back ?? fallback);
+    setBack(null);
+  };
+
+  const menuScreen = auth.player ? 'play' : null;
 
   const openStory = () => {
     setScreen(null);
     setStory(true);
-  };
-
-  const closeStory = () => {
-    setStory(false);
-    setHasSave(readStorySave() !== null);
-  };
-
-  const resetStory = () => {
-    clearStorySave();
-    setHasSave(false);
   };
 
   return (
@@ -50,6 +55,17 @@ const Index = () => {
         onMenu={(key) => setScreen(key)}
         onAuth={() => setScreen('auth')}
         playerName={auth.player?.nickname ?? null}
+        heroFace={
+          hero
+            ? {
+                src: hero.look.face,
+                filter: hero.variant.filter,
+                glow: hero.magic,
+                label: profile.archetype?.name.trim() || hero.archetype.name,
+              }
+            : null
+        }
+        onHero={() => go('editor')}
         chapter="Глава I. Пепел храма"
         weight="2.4 ГБ"
       />
@@ -62,18 +78,20 @@ const Index = () => {
         description="Выбери вид некроманта, осмотри открытый мир и загляни к богам — дары решают всё."
       >
         <PlayPanel
-          difficulty={settings.difficulty}
+          difficulty={game.settings.difficulty}
           hasSave={hasSave}
           onOpenSettings={() => setScreen('settings')}
-          onOpenCharacter={() => setScreen('character')}
+          onOpenCharacter={() => go('character')}
+          onOpenSelect={() => go('select')}
+          onOpenEditor={() => go('editor')}
           onStartStory={openStory}
-          onResetStory={resetStory}
+          onResetStory={() => profile.setStory(null)}
         />
       </GameDialog>
 
       <GameDialog
         open={screen === 'character'}
-        onOpenChange={close}
+        onOpenChange={() => goBack(null)}
         icon="UserRoundCog"
         title="Конструктор героя"
         description="Собери облик некроманта: плоть, шрамы, облачение фракции и ауру порчи."
@@ -81,55 +99,7 @@ const Index = () => {
         <CharacterCreator />
       </GameDialog>
 
-      <GameDialog
-        open={screen === 'scores'}
-        onOpenChange={close}
-        icon="Trophy"
-        title="Таблица рекордов"
-        description="Кто дальше прошёл по следу заговора аврамистов."
-      >
-        <ScoresPanel />
-      </GameDialog>
-
-      <GameDialog
-        open={screen === 'rules'}
-        onOpenChange={close}
-        icon="ScrollText"
-        title="Правила и как играть"
-        description="Управление, дознание, смерть и путь к Шпилю Лжебога."
-      >
-        <RulesPanel />
-      </GameDialog>
-
-      <GameDialog
-        open={screen === 'lore'}
-        onOpenChange={close}
-        icon="BookOpen"
-        title="Мир Requiem"
-        description="Пантеон, хроника аврамистов и четыре силы, что делят землю за стенами Шпиля."
-      >
-        <LorePanel />
-      </GameDialog>
-
-      <GameDialog
-        open={screen === 'settings'}
-        onOpenChange={close}
-        icon="Settings"
-        title="Настройки"
-        description="Звук, сложность и мелочи. Всё сохраняется на этом устройстве."
-      >
-        <SettingsPanel settings={settings} update={update} reset={reset} />
-      </GameDialog>
-
-      <GameDialog
-        open={screen === 'awards'}
-        onOpenChange={close}
-        icon="Star"
-        title="Достижения и награды"
-        description="Дары, титулы и скины за настойчивость в поиске правды."
-      >
-        <AwardsPanel />
-      </GameDialog>
+      <MenuDialogs screen={screen} onClose={close} game={game} />
 
       <GameDialog
         open={screen === 'auth'}
@@ -145,12 +115,43 @@ const Index = () => {
           pending={auth.pending}
           error={auth.error}
           onLogin={auth.login}
-          onLogout={auth.logout}
+          onLogout={async () => {
+            await profile.flushNow();
+            await auth.logout();
+          }}
         />
       </GameDialog>
 
-      {story && <StoryGame difficulty={settings.difficulty} onExit={closeStory} />}
+      {screen === 'select' && (
+        <ArchetypeSelect onClose={() => goBack(menuScreen)} onChosen={() => setScreen('editor')} />
+      )}
+
+      {screen === 'editor' && (
+        <ArchetypeEditor
+          onClose={() => goBack(menuScreen)}
+          onDone={() => {
+            setBack(null);
+            setScreen(menuScreen);
+          }}
+          onFineTune={() => {
+            setBack('editor');
+            setScreen('character');
+          }}
+          onChangeArchetype={() => setScreen('select')}
+        />
+      )}
+
+      {story && <StoryGame difficulty={game.settings.difficulty} onExit={() => setStory(false)} />}
     </main>
+  );
+};
+
+const Index = () => {
+  const auth = useAuth();
+  return (
+    <ProfileProvider player={auth.player}>
+      <IndexScreen auth={auth} />
+    </ProfileProvider>
   );
 };
 

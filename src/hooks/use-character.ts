@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
+import { useProfile } from '@/contexts/ProfileContext';
+import { DEFAULT_CHARACTER, type Character, type ListField } from '@/data/character-model';
 import {
   GENDERS,
   BUILDS,
@@ -45,103 +47,8 @@ import {
   MAGIC_COLORS,
 } from '@/data/character-gear';
 
-export type Character = {
-  gender: string;
-  build: string;
-  age: string;
-  faceShape: string;
-  skin: string;
-  hairstyle: string;
-  hairColor: string;
-  eyeColor: string;
-  eyeEffects: string[];
-  browShape: string;
-  browDensity: string;
-  browColor: string;
-  nose: string;
-  lips: string;
-  faceScars: string[];
-  scarNature: string;
-  glowingScars: boolean;
-  faceTattoos: string[];
-  bodyScars: string[];
-  bodyTattoos: string[];
-  glowingTattoos: boolean;
-  anomalies: string[];
-  hands: string[];
-  gait: string;
-  faction: string;
-  wear: string[];
-  common: string[];
-  hood: string;
-  hat: string;
-  crown: string;
-  mask: string;
-  blindfold: string;
-  neckwear: string[];
-  rings: string[];
-  earrings: string[];
-  belts: string[];
-  bracers: string[];
-  bags: string[];
-  aura: string[];
-  voice: string;
-  posture: string;
-  movement: string;
-  magicColor: string;
-};
-
-export const DEFAULT_CHARACTER: Character = {
-  gender: 'male',
-  build: 'medium',
-  age: 'mature',
-  faceShape: 'oval',
-  skin: 'alabaster',
-  hairstyle: 'ragged',
-  hairColor: 'raven',
-  eyeColor: 'green',
-  eyeEffects: ['glow'],
-  browShape: 'straight',
-  browDensity: 'medium',
-  browColor: 'hair',
-  nose: 'straight',
-  lips: 'medium',
-  faceScars: [],
-  scarNature: 'ritual',
-  glowingScars: false,
-  faceTattoos: [],
-  bodyScars: [],
-  bodyTattoos: [],
-  glowingTattoos: false,
-  anomalies: [],
-  hands: [],
-  gait: 'straight',
-  faction: 'bones',
-  wear: [],
-  common: ['cloak-hood'],
-  hood: 'plain',
-  hat: '',
-  crown: '',
-  mask: '',
-  blindfold: '',
-  neckwear: [],
-  rings: [],
-  earrings: [],
-  belts: [],
-  bracers: [],
-  bags: [],
-  aura: ['shadows'],
-  voice: 'low',
-  posture: 'straight',
-  movement: 'smooth',
-  magicColor: 'violet',
-};
-
-const KEY = 'rpv-character';
-
-export type ListField = {
-  [K in keyof Character]: Character[K] extends string[] ? K : never;
-}[keyof Character];
+export { DEFAULT_CHARACTER } from '@/data/character-model';
+export type { Character, ListField } from '@/data/character-model';
 
 const pick = (list: Option[]) => list[Math.floor(Math.random() * list.length)].id;
 
@@ -152,29 +59,14 @@ const some = (list: Option[], max: number) =>
     .map((o) => o.id);
 
 export function useCharacter() {
-  const [character, setCharacter] = useState<Character>(() => {
-    if (typeof window === 'undefined') return DEFAULT_CHARACTER;
-    try {
-      const raw = window.localStorage.getItem(KEY);
-      return raw
-        ? { ...DEFAULT_CHARACTER, ...(JSON.parse(raw) as Partial<Character>) }
-        : DEFAULT_CHARACTER;
-    } catch {
-      return DEFAULT_CHARACTER;
-    }
-  });
+  const { character, setCharacter } = useProfile();
 
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(KEY, JSON.stringify(character));
-    } catch {
-      /* приватный режим — просто не сохраняем */
-    }
-  }, [character]);
-
-  const set = useCallback(<K extends keyof Character>(field: K, value: Character[K]) => {
-    setCharacter((prev) => ({ ...prev, [field]: value }));
-  }, []);
+  const set = useCallback(
+    <K extends keyof Character>(field: K, value: Character[K]) => {
+      setCharacter((prev) => ({ ...prev, [field]: value }));
+    },
+    [setCharacter],
+  );
 
   const toggle = useCallback((field: ListField, value: string) => {
     setCharacter((prev) => {
@@ -184,7 +76,7 @@ export function useCharacter() {
         [field]: list.includes(value) ? list.filter((v) => v !== value) : [...list, value],
       };
     });
-  }, []);
+  }, [setCharacter]);
 
   const randomize = useCallback(() => {
     const faction = pick(FACTIONS.map((f) => ({ id: f.id, label: f.label })));
@@ -234,9 +126,9 @@ export function useCharacter() {
       movement: pick(MOVEMENTS),
       magicColor: pick(MAGIC_COLORS),
     });
-  }, []);
+  }, [setCharacter]);
 
-  const reset = useCallback(() => setCharacter(DEFAULT_CHARACTER), []);
+  const reset = useCallback(() => setCharacter(DEFAULT_CHARACTER), [setCharacter]);
 
   return { character, set, toggle, randomize, reset };
 }

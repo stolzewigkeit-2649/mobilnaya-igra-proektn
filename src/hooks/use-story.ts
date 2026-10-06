@@ -1,55 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useProfile } from '@/contexts/ProfileContext';
+import { initialStoryState as initialState, type StoryState } from '@/lib/story-state';
 import {
   SCENE_MAP,
   SCENE_ORDER,
-  START_SCENE,
   FACTION_IDS,
   FACTION_META,
   GIFT_META,
-  type EvidenceId,
   type FactionId,
-  type GodId,
   type StoryChoice,
   type StoryRequire,
 } from '@/data/story';
 import type { Difficulty } from '@/hooks/use-game-settings';
 
-export type StoryState = {
-  sceneId: string;
-  evidence: EvidenceId[];
-  gifts: GodId[];
-  rep: Record<FactionId, number>;
-  health: number;
-  sanity: number;
-  flags: string[];
-  visited: string[];
-};
-
-const KEY = 'rpv-story';
-
-const emptyRep = (): Record<FactionId, number> =>
-  FACTION_IDS.reduce(
-    (acc, f) => {
-      acc[f] = 0;
-      return acc;
-    },
-    {} as Record<FactionId, number>,
-  );
-
-const initialState = (startRep?: FactionId): StoryState => {
-  const rep = emptyRep();
-  if (startRep) rep[startRep] = 1;
-  return {
-    sceneId: START_SCENE,
-    evidence: [],
-    gifts: [],
-    rep,
-    health: 100,
-    sanity: 100,
-    flags: [],
-    visited: [START_SCENE],
-  };
-};
+export type { StoryState } from '@/lib/story-state';
 
 const PENALTY: Record<Difficulty, number> = {
   penitent: 0.7,
@@ -61,25 +25,6 @@ const clamp = (n: number) => Math.max(0, Math.min(100, n));
 
 export type LockReason = string | null;
 
-export function readStorySave(): StoryState | null {
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as StoryState;
-    return parsed?.sceneId && SCENE_MAP[parsed.sceneId] ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-export function clearStorySave() {
-  try {
-    window.localStorage.removeItem(KEY);
-  } catch {
-    /* приватный режим */
-  }
-}
-
 type Options = { difficulty: Difficulty; faction?: string };
 
 export function useStory({ difficulty, faction }: Options) {
@@ -87,33 +32,16 @@ export function useStory({ difficulty, faction }: Options) {
     ? (faction as FactionId)
     : undefined;
 
-  const [state, setState] = useState<StoryState | null>(() => {
-    if (typeof window === 'undefined') return null;
-    try {
-      const raw = window.localStorage.getItem(KEY);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw) as StoryState;
-      if (!parsed?.sceneId || !SCENE_MAP[parsed.sceneId]) return null;
-      return { ...initialState(heroFaction), ...parsed, rep: { ...emptyRep(), ...parsed.rep } };
-    } catch {
-      return null;
-    }
-  });
+  const { story: state, setStory: setState } = useProfile();
 
-  useEffect(() => {
-    try {
-      if (state) window.localStorage.setItem(KEY, JSON.stringify(state));
-      else window.localStorage.removeItem(KEY);
-    } catch {
-      /* приватный режим */
-    }
-  }, [state]);
+  const start = useCallback(() => setState(initialState(heroFaction)), [heroFaction, setState]);
 
-  const start = useCallback(() => setState(initialState(heroFaction)), [heroFaction]);
+  const restart = useCallback(
+    () => setState(initialState(heroFaction)),
+    [heroFaction, setState],
+  );
 
-  const restart = useCallback(() => setState(initialState(heroFaction)), [heroFaction]);
-
-  const drop = useCallback(() => setState(null), []);
+  const drop = useCallback(() => setState(null), [setState]);
 
   const lockOf = useCallback(
     (req: StoryRequire | undefined, s: StoryState): LockReason => {
@@ -185,7 +113,7 @@ export function useStory({ difficulty, faction }: Options) {
         return next;
       });
     },
-    [difficulty, lockOf],
+    [difficulty, lockOf, setState],
   );
 
   return {

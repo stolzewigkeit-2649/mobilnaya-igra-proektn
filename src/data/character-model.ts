@@ -1,0 +1,95 @@
+export type Character = {
+  gender: string;
+  build: string;
+  age: string;
+  faceShape: string;
+  skin: string;
+  hairstyle: string;
+  hairColor: string;
+  eyeColor: string;
+  eyeEffects: string[];
+  browShape: string;
+  browDensity: string;
+  browColor: string;
+  nose: string;
+  lips: string;
+  faceScars: string[];
+  scarNature: string;
+  glowingScars: boolean;
+  faceTattoos: string[];
+  bodyScars: string[];
+  bodyTattoos: string[];
+  glowingTattoos: boolean;
+  anomalies: string[];
+  hands: string[];
+  gait: string;
+  faction: string;
+  wear: string[];
+  common: string[];
+  hood: string;
+  hat: string;
+  crown: string;
+  mask: string;
+  blindfold: string;
+  neckwear: string[];
+  rings: string[];
+  earrings: string[];
+  belts: string[];
+  bracers: string[];
+  bags: string[];
+  aura: string[];
+  voice: string;
+  posture: string;
+  movement: string;
+  magicColor: string;
+};
+
+export const DEFAULT_CHARACTER: Character = {
+  gender: 'male',
+  build: 'medium',
+  age: 'mature',
+  faceShape: 'oval',
+  skin: 'alabaster',
+  hairstyle: 'ragged',
+  hairColor: 'raven',
+  eyeColor: 'green',
+  eyeEffects: ['glow'],
+  browShape: 'straight',
+  browDensity: 'medium',
+  browColor: 'hair',
+  nose: 'straight',
+  lips: 'medium',
+  faceScars: [],
+  scarNature: 'ritual',
+  glowingScars: false,
+  faceTattoos: [],
+  bodyScars: [],
+  bodyTattoos: [],
+  glowingTattoos: false,
+  anomalies: [],
+  hands: [],
+  gait: 'straight',
+  faction: 'bones',
+  wear: [],
+  common: ['cloak-hood'],
+  hood: 'plain',
+  hat: '',
+  crown: '',
+  mask: '',
+  blindfold: '',
+  neckwear: [],
+  rings: [],
+  earrings: [],
+  belts: [],
+  bracers: [],
+  bags: [],
+  aura: ['shadows'],
+  voice: 'low',
+  posture: 'straight',
+  movement: 'smooth',
+  magicColor: 'violet',
+};
+
+export type ListField = {
+  [K in keyof Character]: Character[K] extends string[] ? K : never;
+}[keyof Character];

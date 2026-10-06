@@ -7,6 +7,8 @@ import EndingView from '@/components/game/story/EndingView';
 import { CHAPTER_TITLE } from '@/data/story';
 import { useStory } from '@/hooks/use-story';
 import { useCharacter } from '@/hooks/use-character';
+import { useProfile } from '@/contexts/ProfileContext';
+import SyncBadge from '@/components/game/SyncBadge';
 import { DIFFICULTY_INFO, type Difficulty } from '@/hooks/use-game-settings';
 
 type StoryGameProps = {
@@ -16,6 +18,8 @@ type StoryGameProps = {
 
 const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
   const { character } = useCharacter();
+  const { archetype } = useProfile();
+  const heroName = archetype?.name.trim() || null;
   const story = useStory({ difficulty, faction: character.faction });
   const [confirm, setConfirm] = useState(false);
   const top = useRef<HTMLDivElement>(null);
@@ -44,8 +48,14 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
 
       <header className="relative z-10 flex items-center gap-2 border-b border-border bg-card/70 px-3 py-2.5 backdrop-blur-sm sm:px-5">
         <div className="min-w-0 flex-1">
+          {heroName && (
+            <p className="mb-1 truncate font-display text-xs font-bold tracking-wide text-ink">
+              {heroName}
+            </p>
+          )}
           <StatusBar state={story.state} />
         </div>
+        <SyncBadge compact className="hidden shrink-0 min-[360px]:inline-flex" />
         <button
           type="button"
           onClick={tryExit}

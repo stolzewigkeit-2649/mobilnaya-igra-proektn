@@ -3,6 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { toast } from '@/hooks/use-toast';
 import { useCharacter } from '@/hooks/use-character';
+import { useProfile } from '@/contexts/ProfileContext';
+import SyncBadge from '@/components/game/SyncBadge';
 import CharacterPreview from '@/components/game/character/CharacterPreview';
 import SectionBasics from '@/components/game/character/SectionBasics';
 import SectionFace from '@/components/game/character/SectionFace';
@@ -27,6 +29,20 @@ const TABS = [
 
 const CharacterCreator = () => {
   const { character, set, toggle, randomize, reset } = useCharacter();
+  const { signedIn, status, flushNow } = useProfile();
+
+  const save = () => {
+    void flushNow();
+    const cloud = signedIn && status !== 'error';
+    toast({
+      title: cloud ? 'Герой сохранён в аккаунте' : 'Герой сохранён на этом устройстве',
+      description: cloud
+        ? `${summary(character)} — облик доступен на любом устройстве после входа.`
+        : signedIn
+          ? `${summary(character)} — нет связи с облаком, отправим при следующем изменении.`
+          : `${summary(character)} — войди, чтобы облик был доступен на любом устройстве.`,
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -52,9 +68,10 @@ const CharacterCreator = () => {
       </Tabs>
 
       <div className="sticky bottom-0 -mx-1 space-y-3 border-t border-border bg-card/95 px-1 pb-1 pt-3 backdrop-blur">
-        <p className="text-[0.7rem] leading-tight text-muted-foreground">
-          <span className="text-ink">{summary(character)}</span>
-        </p>
+        <div className="flex items-start justify-between gap-2">
+          <p className="min-w-0 flex-1 text-[0.7rem] leading-tight text-ink">{summary(character)}</p>
+          <SyncBadge compact className="shrink-0" />
+        </div>
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
@@ -75,12 +92,7 @@ const CharacterCreator = () => {
         </div>
         <button
           type="button"
-          onClick={() =>
-            toast({
-              title: 'Герой сохранён',
-              description: `${summary(character)} — облик записан на этом устройстве.`,
-            })
-          }
+          onClick={save}
           className="flex h-11 w-full items-center justify-center gap-2.5 rounded-lg font-display text-sm font-extrabold uppercase tracking-[0.18em] text-primary-foreground transition-transform btn-play-surface hover:scale-[1.02]"
         >
           <Icon name="Save" size={15} />

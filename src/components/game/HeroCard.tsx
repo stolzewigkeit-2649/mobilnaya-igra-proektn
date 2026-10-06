@@ -6,11 +6,15 @@ const ART_URL =
 
 export type MenuKey = 'scores' | 'rules' | 'lore' | 'settings' | 'awards';
 
+export type HeroFace = { src: string; filter: string; glow: string; label: string };
+
 type HeroCardProps = {
   onPlay: () => void;
   onMenu: (key: MenuKey) => void;
   onAuth: () => void;
   playerName: string | null;
+  heroFace?: HeroFace | null;
+  onHero?: () => void;
   chapter: string;
   weight: string;
 };
@@ -23,7 +27,16 @@ const MENU: { key: MenuKey; label: string; icon: string }[] = [
   { key: 'awards', label: 'Награды', icon: 'Star' },
 ];
 
-const HeroCard = ({ onPlay, onMenu, onAuth, playerName, chapter, weight }: HeroCardProps) => {
+const HeroCard = ({
+  onPlay,
+  onMenu,
+  onAuth,
+  playerName,
+  heroFace,
+  onHero,
+  chapter,
+  weight,
+}: HeroCardProps) => {
   return (
     <section
       className="relative z-10 flex h-full max-h-[640px] w-full max-w-[1112px] animate-rise flex-col overflow-hidden rounded-lg panel-surface"
@@ -56,6 +69,23 @@ const HeroCard = ({ onPlay, onMenu, onAuth, playerName, chapter, weight }: HeroC
               <Icon name={playerName ? 'UserCheck' : 'LogIn'} size={13} className="shrink-0 text-ink" />
               <span className="truncate">{playerName ?? 'Войти'}</span>
             </button>
+            {heroFace && (
+              <button
+                type="button"
+                onClick={onHero}
+                title={heroFace.label}
+                aria-label={heroFace.label}
+                className="h-9 w-9 shrink-0 overflow-hidden rounded-full transition-transform hover:scale-105"
+                style={{ boxShadow: `0 0 0 2px ${heroFace.glow}, 0 0 16px -2px ${heroFace.glow}` }}
+              >
+                <img
+                  src={heroFace.src}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  style={{ filter: heroFace.filter }}
+                />
+              </button>
+            )}
           </div>
           <h1 className="mt-4 font-display text-[2.15rem] font-extrabold leading-[1.06] tracking-[-0.015em] sm:mt-5 sm:text-5xl md:text-[56px]">
             Requiem
