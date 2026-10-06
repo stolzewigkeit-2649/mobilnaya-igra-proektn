@@ -1,6 +1,6 @@
 import Icon from '@/components/ui/icon';
 import { gendered } from '@/data/story/voice';
-import { CHAPTERS, type StoryScene } from '@/data/story';
+import { CHAPTERS, SCENE_ART, type StoryScene } from '@/data/story';
 import SceneText from '@/components/game/story/SceneText';
 import SceneBanner from '@/components/game/story/SceneBanner';
 
@@ -15,6 +15,7 @@ const SceneView = ({ scene, gender, note }: SceneViewProps) => {
   const chapter = CHAPTERS[scene.chapter];
   const textDelay = (i: number) => 0.12 + i * 0.18;
   const afterText = textDelay(scene.text.length);
+  const art = SCENE_ART[scene.id];
 
   return (
     <div className="space-y-4">
@@ -29,6 +30,25 @@ const SceneView = ({ scene, gender, note }: SceneViewProps) => {
           >
             {chapter.title}
           </p>
+        </div>
+      )}
+
+      {art && (
+        <div
+          className="relative -mx-1 animate-fade overflow-hidden rounded-xl border border-border"
+          style={{ boxShadow: `0 20px 50px -24px ${glow}` }}
+        >
+          <img
+            src={art}
+            alt={scene.title}
+            className="aspect-[16/9] w-full scale-[1.02] object-cover"
+            loading="eager"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
+          <div
+            className="pointer-events-none absolute inset-0 mix-blend-soft-light"
+            style={{ background: `radial-gradient(circle at 50% 120%, ${glow}55, transparent 60%)` }}
+          />
         </div>
       )}
 

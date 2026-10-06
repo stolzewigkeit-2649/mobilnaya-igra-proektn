@@ -41,3 +41,4 @@ export const SCENE_TOTAL = STORY_SCENES.length;
 
 export * from '@/data/story/types';
 export * from '@/data/story/meta';
+export * from '@/data/story/art';
