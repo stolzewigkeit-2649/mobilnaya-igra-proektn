@@ -10,6 +10,7 @@ type AuthPanelProps = {
   error: string | null;
   onLogin: (id: string) => void;
   onLogout: () => void;
+  onGuest?: () => void;
 };
 
 const PRIVACY = [
@@ -26,6 +27,7 @@ const AuthPanel = ({
   error,
   onLogin,
   onLogout,
+  onGuest,
 }: AuthPanelProps) => {
   if (loading) {
     return (
@@ -92,6 +94,28 @@ const AuthPanel = ({
               Войти через {p.label}
             </button>
           ))}
+        </div>
+      )}
+
+      {onGuest && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 text-[0.66rem] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            или
+            <span className="h-px flex-1 bg-border" />
+          </div>
+          <button
+            type="button"
+            onClick={onGuest}
+            className="flex h-12 w-full items-center justify-center gap-2.5 rounded-xl font-display text-sm font-extrabold uppercase tracking-[0.14em] text-primary-foreground transition-transform btn-play-surface hover:scale-[1.01]"
+          >
+            <Icon name="Play" size={15} className="fill-current" />
+            Играть без входа
+          </button>
+          <p className="text-center text-[0.7rem] leading-relaxed text-muted-foreground">
+            Прогресс сохранится только на этом устройстве. Войти можно в любой момент — он
+            перенесётся в аккаунт.
+          </p>
         </div>
       )}
 

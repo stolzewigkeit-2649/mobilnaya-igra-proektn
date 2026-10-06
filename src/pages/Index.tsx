@@ -21,6 +21,7 @@ const IndexScreen = ({ auth }: { auth: Auth }) => {
   const [screen, setScreen] = useState<ScreenKey>(null);
   const [back, setBack] = useState<ScreenKey>(null);
   const [story, setStory] = useState(false);
+  const [guest, setGuest] = useState(() => localStorage.getItem('rpv-guest') === '1');
   const game = useGameSettings();
   const profile = useProfile();
   const hasSave = profile.story !== null;
@@ -38,7 +39,14 @@ const IndexScreen = ({ auth }: { auth: Auth }) => {
     setBack(null);
   };
 
-  const menuScreen = auth.player ? 'play' : null;
+  const canPlay = !!auth.player || guest;
+  const menuScreen = canPlay ? 'play' : null;
+
+  const playAsGuest = () => {
+    localStorage.setItem('rpv-guest', '1');
+    setGuest(true);
+    setScreen('play');
+  };
 
   const openStory = () => {
     setScreen(null);
@@ -51,7 +59,7 @@ const IndexScreen = ({ auth }: { auth: Auth }) => {
       <div className="pointer-events-none absolute inset-0 scene-grid" />
 
       <HeroCard
-        onPlay={() => setScreen(auth.player ? 'play' : 'auth')}
+        onPlay={() => setScreen(canPlay ? 'play' : 'auth')}
         onMenu={(key) => setScreen(key)}
         onAuth={() => setScreen('auth')}
         playerName={auth.player?.nickname ?? null}
@@ -105,8 +113,12 @@ const IndexScreen = ({ auth }: { auth: Auth }) => {
         open={screen === 'auth'}
         onOpenChange={close}
         icon="KeyRound"
-        title="Вход в обитель"
-        description="Выбери привычный сервис. Пароль вводится только у него — игра личных данных не получает."
+        title={auth.player ? 'Обитель' : 'Сохранить прогресс?'}
+        description={
+          auth.player
+            ? 'Ты в аккаунте — герой и прогресс доступны на любом устройстве.'
+            : 'Войди через Google, чтобы прогресс сохранялся в аккаунте, или играй без входа.'
+        }
       >
         <AuthPanel
           player={auth.player}
@@ -115,6 +127,7 @@ const IndexScreen = ({ auth }: { auth: Auth }) => {
           pending={auth.pending}
           error={auth.error}
           onLogin={auth.login}
+          onGuest={playAsGuest}
           onLogout={async () => {
             await profile.flushNow();
             await auth.logout();
