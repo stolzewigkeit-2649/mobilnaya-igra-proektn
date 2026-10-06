@@ -117,8 +117,35 @@ export function useStory({ difficulty, faction }: Options) {
     [difficulty, heroFaction, setState],
   );
 
+  const jumpTo = useCallback(
+    (sceneId: string, extra: { flags?: string[]; skipped?: string[] } = {}) => {
+      setState((prev) => {
+        if (!prev || !SCENE_MAP[sceneId]) return prev;
+        const k = PENALTY[difficulty];
+        let next = applyEffects({ ...prev, event: null, note: null }, { flags: extra.flags }, k);
+        (extra.skipped ?? []).forEach((id) => {
+          next = applyEffects(next, SCENE_MAP[id]?.onEnter, k);
+        });
+        next = applyEffects(next, SCENE_MAP[sceneId].onEnter, k);
+        next.sceneId = sceneId;
+        const seen = [...(extra.skipped ?? []), sceneId].filter((id) => !next.visited.includes(id));
+        next.visited = [...next.visited, ...seen];
+        if (SCENE_MAP[sceneId].chapterStart) next.checkpoint = coreOf(next);
+        return next;
+      });
+    },
+    [difficulty, setState],
+  );
+
+  const addFlag = useCallback(
+    (flag: string) => setState((prev) => (prev ? applyEffects(prev, { flags: [flag] }) : prev)),
+    [setState],
+  );
+
   return {
     state,
+    jumpTo,
+    addFlag,
     scene,
     choices,
     hasSave: state !== null,

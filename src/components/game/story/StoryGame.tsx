@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import Icon from '@/components/ui/icon';
 import SceneView from '@/components/game/story/SceneView';
 import ChoiceList from '@/components/game/story/ChoiceList';
 import StatusBar from '@/components/game/story/StatusBar';
 import EndingView from '@/components/game/story/EndingView';
 import DeathOverlay from '@/components/game/story/DeathOverlay';
+import CryptInvite from '@/components/game/crypt3d/CryptInvite';
+import { useGameSettings } from '@/hooks/use-game-settings';
+
+const CryptExperience = lazy(() => import('@/components/game/crypt3d/CryptExperience'));
 import { CHAPTER_TITLE, SCENE_TOTAL } from '@/data/story';
 import { useStory } from '@/hooks/use-story';
 import { useCharacter } from '@/hooks/use-character';
@@ -23,6 +27,8 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
   const heroName = archetype?.name.trim() || null;
   const story = useStory({ difficulty, faction: character.faction });
   const [confirm, setConfirm] = useState(false);
+  const [in3d, setIn3d] = useState(false);
+  const { settings } = useGameSettings();
   const top = useRef<HTMLDivElement>(null);
 
   const { state, start } = story;
@@ -107,6 +113,29 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
           </p>
         </div>
       </div>
+
+      {story.scene.id === 'p-awaken' && !story.state.flags.includes('crypt3d-done') && !in3d && (
+        <CryptInvite onEnter={() => setIn3d(true)} onText={() => story.addFlag('crypt3d-done')} />
+      )}
+
+      {in3d && (
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black font-display italic text-white/70">
+              Склеп пробуждается…
+            </div>
+          }
+        >
+          <CryptExperience
+            volume={(settings.master / 100) * 0.9}
+            onExit={() => setIn3d(false)}
+            onComplete={() => {
+              setIn3d(false);
+              story.jumpTo('p-first-soul', { flags: ['crypt3d-done'], skipped: ['p-hekate'] });
+            }}
+          />
+        </Suspense>
+      )}
 
       {story.state.event === 'death' && (
         <DeathOverlay
