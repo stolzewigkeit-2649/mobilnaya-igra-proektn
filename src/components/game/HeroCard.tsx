@@ -95,8 +95,8 @@ const HeroCard = ({
             Порча · Откровение · Правда
           </p>
           <p className="mt-4 max-w-[400px] text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Ты — некромант, ушедший из секты аврамистов. Боги дают дары, ты собираешь{' '}
-            <b className="font-bold text-foreground">улики их лжи</b>.
+            Ты — некромант, знающий истину и борющийся против секты аврамистов. Боги дают дары, ты
+            собираешь <b className="font-bold text-foreground">улики лжи сектантов</b>.
           </p>
         </header>
 

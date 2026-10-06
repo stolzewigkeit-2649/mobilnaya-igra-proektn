@@ -66,7 +66,7 @@ const IndexScreen = ({ auth }: { auth: Auth }) => {
             : null
         }
         onHero={() => go('editor')}
-        chapter="Глава I. Пепел храма"
+        chapter="Демо · Доказательство лжи"
         weight="2.4 ГБ"
       />
 
@@ -74,8 +74,8 @@ const IndexScreen = ({ auth }: { auth: Auth }) => {
         open={screen === 'play'}
         onOpenChange={close}
         icon="Play"
-        title="Выход из скита"
-        description="Выбери вид некроманта, осмотри открытый мир и загляни к богам — дары решают всё."
+        title="Доказательство лжи"
+        description="Ты знаешь о себе три вещи: ты некромант, ты бессмертен и мёртвые тебе отвечают. Остальное придётся узнать."
       >
         <PlayPanel
           difficulty={game.settings.difficulty}

@@ -4,7 +4,8 @@ import SceneView from '@/components/game/story/SceneView';
 import ChoiceList from '@/components/game/story/ChoiceList';
 import StatusBar from '@/components/game/story/StatusBar';
 import EndingView from '@/components/game/story/EndingView';
-import { CHAPTER_TITLE } from '@/data/story';
+import DeathOverlay from '@/components/game/story/DeathOverlay';
+import { CHAPTER_TITLE, SCENE_TOTAL } from '@/data/story';
 import { useStory } from '@/hooks/use-story';
 import { useCharacter } from '@/hooks/use-character';
 import { useProfile } from '@/contexts/ProfileContext';
@@ -77,11 +78,16 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
             />
           ) : (
             <>
-              <SceneView scene={story.scene} gender={character.gender} />
+              <SceneView
+                key={`${story.scene.id}-${story.state.note ?? ''}`}
+                scene={story.scene}
+                gender={character.gender}
+                note={story.state.note}
+              />
               <div className="mt-6">
                 <ChoiceList
                   items={story.choices}
-                  delay={0.15 + story.scene.text.length * 0.22}
+                  delay={0.2 + story.scene.text.length * 0.18 + (story.scene.banner || story.state.note ? 0.3 : 0)}
                   onPick={story.choose}
                 />
               </div>
@@ -91,7 +97,9 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
           <p className="mt-7 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.66rem] text-muted-foreground">
             <span>{CHAPTER_TITLE}</span>
             <span className="h-px w-5 hairline" />
-            <span>сцена {story.sceneNumber}</span>
+            <span>
+              сцена {story.sceneNumber} из {SCENE_TOTAL}
+            </span>
             <span className="h-px w-5 hairline" />
             <span>{DIFFICULTY_INFO[difficulty].name}</span>
             <span className="h-px w-5 hairline" />
@@ -100,12 +108,20 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
         </div>
       </div>
 
+      {story.state.event === 'death' && (
+        <DeathOverlay
+          deaths={story.state.deaths}
+          sanity={story.state.sanity}
+          onRise={story.dismissEvent}
+        />
+      )}
+
       {confirm && (
         <div className="absolute inset-0 z-20 flex animate-fade-in items-center justify-center bg-background/85 p-4 backdrop-blur-sm">
           <div className="w-full max-w-sm animate-scale-in rounded-lg p-5 panel-surface">
             <h3 className="font-display text-lg font-extrabold">Выйти из главы?</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Прогресс сохранён: вернёшься на эту же сцену. Пепел подождёт.
+              Прогресс сохранён: вернёшься на эту же сцену. Мёртвые подождут.
             </p>
             <div className="mt-4 flex gap-2.5">
               <button

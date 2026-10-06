@@ -45,7 +45,7 @@ const StoryControls = ({
         className="flex h-12 w-full items-center justify-center gap-2.5 rounded-lg px-6 font-display text-sm font-extrabold uppercase tracking-[0.16em] text-primary-foreground transition-transform btn-play-surface hover:scale-[1.01]"
       >
         <Icon name={hasSave ? 'Play' : 'Flame'} size={15} className="fill-current" />
-        {hasSave ? 'Продолжить главу I' : 'Начать главу I'}
+        {hasSave ? 'Продолжить демо' : 'Начать демо'}
       </button>
 
       <div className="flex justify-center">
@@ -59,11 +59,11 @@ const StoryControls = ({
           className="flex w-full items-center justify-center gap-2 text-xs text-muted-foreground underline-offset-4 hover:text-destructive hover:underline"
         >
           <Icon name="RotateCcw" size={13} />
-          Сбросить прохождение и начать с ночи пожара
+          Сбросить прохождение и проснуться в склепе заново
         </button>
       ) : (
         <p className="text-center text-xs leading-relaxed text-muted-foreground">
-          Текстовое демо: {heroLabel} уходит из скита Ври. Выборы необратимы, {where}.
+          Демо «Доказательство лжи»: {heroLabel} просыпается в склепе, зная о себе три вещи. Пролог и пять глав, {where}.
         </p>
       )}
 

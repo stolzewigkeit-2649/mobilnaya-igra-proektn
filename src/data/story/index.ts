@@ -1,30 +1,24 @@
 import { PROLOGUE_SCENES } from '@/data/story/scenes-prologue';
-import { HEKATE_SCENES } from '@/data/story/scenes-hekate';
-import { BONES_SCENES } from '@/data/story/scenes-bones';
-import { SILENCE_SCENES } from '@/data/story/scenes-silence';
-import { TRADER_SCENES } from '@/data/story/scenes-traders';
-import { EXILE_SCENES } from '@/data/story/scenes-exiles';
-import { CLIMAX_SCENES } from '@/data/story/scenes-climax';
-import { CLASH_SCENES } from '@/data/story/scenes-clash';
-import { CLASH_SCENES_B } from '@/data/story/scenes-clash2';
-import { ENDING_SCENES } from '@/data/story/scenes-endings';
+import { CH1_SCENES } from '@/data/story/scenes-ch1';
+import { CH2_SCENES } from '@/data/story/scenes-ch2';
+import { CH3_SCENES } from '@/data/story/scenes-ch3';
+import { CH4_SCENES } from '@/data/story/scenes-ch4';
+import { CH5_SCENES } from '@/data/story/scenes-ch5';
 import type { StoryScene } from '@/data/story/types';
 
-export const CHAPTER_TITLE = 'Глава I. Пепел храма';
+export const DEMO_TITLE = 'Доказательство лжи';
 
-export const START_SCENE = 'prologue';
+export const CHAPTER_TITLE = `Демо · ${DEMO_TITLE}`;
+
+export const START_SCENE = 'p-awaken';
 
 export const STORY_SCENES: StoryScene[] = [
   ...PROLOGUE_SCENES,
-  ...HEKATE_SCENES,
-  ...BONES_SCENES,
-  ...SILENCE_SCENES,
-  ...TRADER_SCENES,
-  ...EXILE_SCENES,
-  ...CLIMAX_SCENES,
-  ...CLASH_SCENES,
-  ...CLASH_SCENES_B,
-  ...ENDING_SCENES,
+  ...CH1_SCENES,
+  ...CH2_SCENES,
+  ...CH3_SCENES,
+  ...CH4_SCENES,
+  ...CH5_SCENES,
 ];
 
 export const SCENE_MAP: Record<string, StoryScene> = STORY_SCENES.reduce(
@@ -42,6 +36,8 @@ export const SCENE_ORDER: Record<string, number> = STORY_SCENES.reduce(
   },
   {} as Record<string, number>,
 );
+
+export const SCENE_TOTAL = STORY_SCENES.length;
 
 export * from '@/data/story/types';
 export * from '@/data/story/meta';

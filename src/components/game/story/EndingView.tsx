@@ -1,14 +1,13 @@
+import { useState } from 'react';
 import Icon from '@/components/ui/icon';
-import { EVIDENCE_META, FACTION_META, FACTION_IDS, GIFT_META } from '@/data/story';
-import type { StoryEnding } from '@/data/story';
+import {
+  EVIDENCE_META,
+  EVIDENCE_TOTAL,
+  GIFT_KIND_LABEL,
+  GIFT_META,
+  type StoryEnding,
+} from '@/data/story';
 import type { StoryState } from '@/hooks/use-story';
-
-const TONE: Record<string, string> = {
-  good: '#5ec27e',
-  dark: '#d8c89a',
-  bad: '#b04a3a',
-  neutral: '#c9d2d4',
-};
 
 type EndingViewProps = {
   ending: StoryEnding;
@@ -18,24 +17,43 @@ type EndingViewProps = {
 };
 
 const EndingView = ({ ending, state, onRestart, onExit }: EndingViewProps) => {
-  const color = TONE[ending.tone] ?? '#c9d2d4';
+  const [black, setBlack] = useState(!!ending.epigraph);
+
+  if (black && ending.epigraph)
+    return (
+      <button
+        type="button"
+        onClick={() => setBlack(false)}
+        className="fixed inset-0 z-30 flex flex-col items-center justify-center bg-black px-6 text-center"
+      >
+        <p className="animate-fade font-display text-3xl font-extrabold uppercase tracking-[0.18em] text-foreground [animation-delay:.6s] sm:text-5xl">
+          {ending.epigraph.title}
+        </p>
+        <p className="mt-6 max-w-md animate-fade text-base italic leading-relaxed text-muted-foreground [animation-delay:2s] sm:text-lg">
+          {ending.epigraph.line}
+        </p>
+        <p className="mt-10 animate-fade text-[0.7rem] font-bold uppercase tracking-[0.4em] text-ink [animation-delay:3.4s]">
+          Конец демо
+        </p>
+        <p className="mt-12 animate-fade text-[0.66rem] text-muted-foreground/60 [animation-delay:4.4s]">
+          нажми, чтобы продолжить
+        </p>
+      </button>
+    );
 
   return (
     <div className="space-y-5">
       <div className="animate-rise text-center">
         <span
-          className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-accent"
-          style={{ color, boxShadow: `0 0 44px -8px ${color}` }}
+          className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-ink"
+          style={{ boxShadow: '0 0 44px -8px hsl(var(--btn-hi))' }}
         >
           <Icon name={ending.icon} size={26} strokeWidth={1.5} />
         </span>
         <p className="mt-4 text-[0.66rem] font-bold uppercase tracking-[0.22em] text-muted-foreground">
-          Концовка главы I
+          Демо пройдено
         </p>
-        <h2
-          className="mt-2 font-display text-[1.75rem] font-extrabold leading-tight tracking-tight sm:text-4xl"
-          style={{ color }}
-        >
+        <h2 className="mt-2 font-display text-[1.75rem] font-extrabold leading-tight tracking-tight text-ink sm:text-4xl">
           {ending.name}
         </h2>
       </div>
@@ -44,74 +62,46 @@ const EndingView = ({ ending, state, onRestart, onExit }: EndingViewProps) => {
         {ending.summary}
       </p>
 
-      <div className="animate-fade space-y-2.5 rounded-xl border border-border bg-card/60 p-4 [animation-delay:.35s]">
-        <p className="text-[0.66rem] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-          Итог прохождения
-        </p>
-
+      <div className="animate-fade space-y-3 rounded-xl border border-border bg-card/60 p-4 [animation-delay:.35s]">
         <div className="flex flex-wrap gap-1.5 text-[0.7rem] font-bold text-muted-foreground">
           <span className="rounded-full px-2.5 py-1 tile-surface">Здоровье {state.health}</span>
           <span className="rounded-full px-2.5 py-1 tile-surface">Рассудок {state.sanity}</span>
-          <span className="rounded-full px-2.5 py-1 tile-surface">
-            Сцен пройдено {state.visited.length}
-          </span>
+          <span className="rounded-full px-2.5 py-1 tile-surface">Смертей {state.deaths}</span>
         </div>
 
         <div>
-          <p className="text-xs font-bold text-ink">Улики ({state.evidence.length}/7)</p>
-          {state.evidence.length === 0 ? (
-            <p className="mt-1 text-xs text-muted-foreground">Ни одной. Только память.</p>
-          ) : (
-            <ul className="mt-1.5 space-y-1.5">
-              {state.evidence.map((e) => (
-                <li key={e} className="flex items-start gap-2 text-xs text-foreground/85">
-                  <Icon name={EVIDENCE_META[e].icon} size={13} className="mt-0.5 shrink-0 text-ink" />
-                  <span>
-                    <b className="font-semibold">{EVIDENCE_META[e].label}</b>
-                    <span className="block text-muted-foreground">{EVIDENCE_META[e].short}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div>
-          <p className="text-xs font-bold text-ink">Дары и их цена</p>
-          {state.gifts.length === 0 ? (
-            <p className="mt-1 text-xs text-muted-foreground">Ты не взял ни одного. Ты цел.</p>
-          ) : (
-            <ul className="mt-1.5 space-y-1.5">
-              {state.gifts.map((g) => (
-                <li key={g} className="flex items-start gap-2 text-xs text-foreground/85">
-                  <Icon name={GIFT_META[g].icon} size={13} className="mt-0.5 shrink-0 text-ink" />
-                  <span>
-                    <b className="font-semibold">{GIFT_META[g].gift}</b> · {GIFT_META[g].god}
-                    <span className="block text-muted-foreground">{GIFT_META[g].price}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div>
-          <p className="text-xs font-bold text-ink">Отношения</p>
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {FACTION_IDS.map((f) => (
-              <span
-                key={f}
-                className="flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.7rem] font-bold tile-surface"
-                style={{ color: state.rep[f] < 0 ? 'hsl(var(--destructive))' : FACTION_META[f].color }}
-              >
-                <Icon name={FACTION_META[f].icon} size={11} />
-                {FACTION_META[f].label}
-                <span className="tabular-nums">
-                  {state.rep[f] > 0 ? `+${state.rep[f]}` : state.rep[f]}
+          <p className="text-xs font-bold text-ink">
+            Улики ({state.evidence.length}/{EVIDENCE_TOTAL})
+          </p>
+          <ul className="mt-1.5 space-y-1.5">
+            {state.evidence.map((e) => (
+              <li key={e} className="flex items-start gap-2 text-xs text-foreground/85">
+                <Icon name={EVIDENCE_META[e].icon} size={13} className="mt-0.5 shrink-0 text-ink" />
+                <span>
+                  <b className="font-semibold">{EVIDENCE_META[e].label}</b>
+                  <span className="block text-muted-foreground">{EVIDENCE_META[e].short}</span>
                 </span>
-              </span>
+              </li>
             ))}
-          </div>
+          </ul>
+        </div>
+
+        <div>
+          <p className="text-xs font-bold text-ink">Дары богов</p>
+          <ul className="mt-1.5 space-y-1.5">
+            {state.gifts.map((g) => (
+              <li key={g} className="flex items-start gap-2 text-xs text-foreground/85">
+                <Icon name={GIFT_META[g].icon} size={13} className="mt-0.5 shrink-0 text-ink" />
+                <span>
+                  <b className="font-semibold">{GIFT_META[g].name}</b>
+                  <span className="text-muted-foreground">
+                    {' '}
+                    · {GIFT_KIND_LABEL[GIFT_META[g].kind]} · {GIFT_META[g].giver}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
@@ -127,7 +117,7 @@ const EndingView = ({ ending, state, onRestart, onExit }: EndingViewProps) => {
           className="flex h-12 flex-1 items-center justify-center gap-2.5 rounded-lg font-display text-sm font-extrabold uppercase tracking-[0.16em] text-primary-foreground transition-transform btn-play-surface hover:scale-[1.01]"
         >
           <Icon name="RotateCcw" size={15} />
-          Начать заново
+          Пройти заново
         </button>
         <button
           type="button"
