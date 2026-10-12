@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { PerformanceMonitor, Sparkles, Cloud, Clouds, Stars } from '@react-three/drei';
+import { PerformanceMonitor, Sparkles, Stars } from '@react-three/drei';
+import GroundMist from '@/components/game/crypt3d/grave/GroundMist';
 import * as THREE from 'three';
 import Terrain from '@/components/game/crypt3d/grave/Terrain';
 import Graves from '@/components/game/crypt3d/grave/Graves';
@@ -108,11 +109,7 @@ const GraveScene = ({ onReady }: { onReady: () => void }) => {
       <Terrain lowQuality={low} />
       <Graves />
       <Characters />
-      {!low && (
-        <Clouds limit={60}>
-          <Cloud seed={3} position={[0, 0.4, -4]} bounds={[14, 0.4, 10]} segments={26} volume={7} opacity={0.18} color="#8a9ab8" speed={0.08} fade={30} />
-        </Clouds>
-      )}
+      <GroundMist count={low ? 16 : 34} />
       <Sparkles count={low ? 40 : 110} scale={[24, 3, 24]} position={[0, 1.4, 0]} size={1.3} speed={0.15} opacity={0.3} color="#b9c8ff" />
       <GravePlayer />
       <FirstPersonHands />
