@@ -20,6 +20,7 @@ type PlayPanelProps = {
   onOpenEditor: () => void;
   onStartStory: () => void;
   onResetStory: () => void;
+  onGoogle?: () => void;
 };
 
 const PlayPanel = ({
@@ -31,6 +32,7 @@ const PlayPanel = ({
   onOpenEditor,
   onStartStory,
   onResetStory,
+  onGoogle,
 }: PlayPanelProps) => {
   const { archetype } = useProfile();
   const chosen = findArchetype(archetype?.id);
@@ -126,6 +128,7 @@ const PlayPanel = ({
           onOpenSettings={onOpenSettings}
           onStartStory={onStartStory}
           onResetStory={onResetStory}
+          onGoogle={onGoogle}
         />
       </TabsContent>
 

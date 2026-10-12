@@ -125,6 +125,10 @@ const CryptExperience = ({ onComplete, onExit, startStage = 'intro', volume = 0.
           <CryptScene onExitReached={() => crypt.set({ stage: 'leaving' })} onReady={onReady} />
         </Suspense>
       </Canvas>
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: 'radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.85) 100%)' }}
+      />
       <Loader ready={ready} />
       <Intro skip={startStage !== 'intro'} ready={ready && started} />
       {ready && !started && (

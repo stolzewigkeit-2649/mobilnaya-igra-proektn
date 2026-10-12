@@ -1,5 +1,6 @@
 import Icon from '@/components/ui/icon';
 import SyncBadge from '@/components/game/SyncBadge';
+import GoogleButton from '@/components/game/GoogleButton';
 import { useProfile } from '@/contexts/ProfileContext';
 import { DIFFICULTY_INFO, type Difficulty } from '@/hooks/use-game-settings';
 
@@ -10,6 +11,7 @@ type StoryControlsProps = {
   onOpenSettings: () => void;
   onStartStory: () => void;
   onResetStory: () => void;
+  onGoogle?: () => void;
 };
 
 const StoryControls = ({
@@ -19,6 +21,7 @@ const StoryControls = ({
   onOpenSettings,
   onStartStory,
   onResetStory,
+  onGoogle,
 }: StoryControlsProps) => {
   const { signedIn, status } = useProfile();
   const diff = DIFFICULTY_INFO[difficulty];
@@ -67,11 +70,11 @@ const StoryControls = ({
         </p>
       )}
 
-      {!signedIn && (
-        <p className="flex items-start justify-center gap-1.5 text-center text-[0.7rem] leading-relaxed text-ink">
-          <Icon name="LogIn" size={12} className="mt-0.5 shrink-0" />
-          Войди, чтобы прогресс был доступен на любом устройстве
-        </p>
+      {!signedIn && onGoogle && (
+        <GoogleButton
+          onClick={onGoogle}
+          note={hasSave ? 'Твой прогресс перенесётся в аккаунт и будет доступен на любом устройстве' : 'Прогресс будет доступен на любом устройстве'}
+        />
       )}
     </div>
   );

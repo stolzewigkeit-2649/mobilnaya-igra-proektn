@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
+import GoogleButton from '@/components/game/GoogleButton';
 
 const ART_URL =
   'https://cdn.poehali.dev/projects/c4458224-623b-48e2-87b6-15ecc04308fd/files/a670e2cd-9df9-48ae-b41e-77203041c657.jpg';
@@ -12,6 +13,8 @@ type HeroCardProps = {
   onPlay: () => void;
   onMenu: (key: MenuKey) => void;
   onAuth: () => void;
+  onGoogle?: () => void;
+  googlePending?: boolean;
   playerName: string | null;
   heroFace?: HeroFace | null;
   onHero?: () => void;
@@ -31,6 +34,8 @@ const HeroCard = ({
   onPlay,
   onMenu,
   onAuth,
+  onGoogle,
+  googlePending,
   playerName,
   heroFace,
   onHero,
@@ -115,6 +120,14 @@ const HeroCard = ({
             <span className="h-px flex-1 hairline" />
             <span>{weight}</span>
           </div>
+          {!playerName && onGoogle && (
+            <GoogleButton
+              onClick={onGoogle}
+              pending={googlePending}
+              note="Сохрани героя и прогресс в аккаунте — играй с любого устройства"
+              className="mt-4 w-full max-w-[430px]"
+            />
+          )}
         </div>
 
         {/* menu */}

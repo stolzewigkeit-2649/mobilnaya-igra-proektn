@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { PerformanceMonitor, Sparkles } from '@react-three/drei';
-import { EffectComposer, Bloom, Vignette, Noise, ToneMapping } from '@react-three/postprocessing';
-import { ToneMappingMode } from 'postprocessing';
 import * as THREE from 'three';
 import Architecture from '@/components/game/crypt3d/Architecture';
 import Props from '@/components/game/crypt3d/Props';
@@ -61,7 +59,8 @@ const Lighting = () => {
 const Exposure = () => {
   const gl = useThree((s) => s.gl);
   useEffect(() => {
-    gl.toneMapping = THREE.NoToneMapping;
+    gl.toneMapping = THREE.ACESFilmicToneMapping;
+    gl.toneMappingExposure = 1.15;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
   }, [gl]);
   return null;
@@ -100,12 +99,6 @@ const CryptScene = ({ onExitReached, onReady }: { onExitReached: () => void; onR
       </mesh>
       <Player onExitReached={onExitReached} />
       <HeroBody />
-      <EffectComposer multisampling={low ? 0 : 4} enableNormalPass={false}>
-        <Bloom mipmapBlur intensity={1.1} luminanceThreshold={0.75} luminanceSmoothing={0.2} radius={0.75} />
-        <Noise opacity={0.06} premultiply />
-        <Vignette eskil={false} offset={0.22} darkness={0.85} />
-        <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-      </EffectComposer>
     </>
   );
 };

@@ -42,6 +42,12 @@ const IndexScreen = ({ auth }: { auth: Auth }) => {
   const canPlay = !!auth.player || guest;
   const menuScreen = canPlay ? 'play' : null;
 
+  const google = auth.providers.find((p) => p.id === 'google');
+  const loginGoogle = () => {
+    if (google?.ready) auth.login('google');
+    else setScreen('auth');
+  };
+
   const playAsGuest = () => {
     localStorage.setItem('rpv-guest', '1');
     setGuest(true);
@@ -62,6 +68,8 @@ const IndexScreen = ({ auth }: { auth: Auth }) => {
         onPlay={() => setScreen(canPlay ? 'play' : 'auth')}
         onMenu={(key) => setScreen(key)}
         onAuth={() => setScreen('auth')}
+        onGoogle={auth.loading ? undefined : loginGoogle}
+        googlePending={auth.pending === 'google'}
         playerName={auth.player?.nickname ?? null}
         heroFace={
           hero
@@ -94,6 +102,7 @@ const IndexScreen = ({ auth }: { auth: Auth }) => {
           onOpenEditor={() => go('editor')}
           onStartStory={openStory}
           onResetStory={() => profile.setStory(null)}
+          onGoogle={auth.player ? undefined : loginGoogle}
         />
       </GameDialog>
 
