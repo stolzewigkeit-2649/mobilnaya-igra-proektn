@@ -1,6 +1,7 @@
 import Icon from '@/components/ui/icon';
 import SyncBadge from '@/components/game/SyncBadge';
 import GoogleButton from '@/components/game/GoogleButton';
+import Scenes3DMenu from '@/components/game/crypt3d/Scenes3DMenu';
 import { useProfile } from '@/contexts/ProfileContext';
 import { DIFFICULTY_INFO, type Difficulty } from '@/hooks/use-game-settings';
 
@@ -54,6 +55,8 @@ const StoryControls = ({
       <div className="flex justify-center">
         <SyncBadge />
       </div>
+
+      <Scenes3DMenu />
 
       {hasSave ? (
         <button
