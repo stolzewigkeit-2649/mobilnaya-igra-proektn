@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { crypt, useCrypt } from '@/components/game/crypt3d/crypt-store';
 import { CANDLE_COUNT } from '@/components/game/crypt3d/Candles';
-import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
+import { touchShard } from '@/components/game/crypt3d/hands/hand-state';
 
 const Lids = ({ open }: { open: number }) => (
   <div className="pointer-events-none absolute inset-0 z-[5]">
@@ -43,16 +43,6 @@ const Intro = ({ skip, ready }: { skip: boolean; ready: boolean }) => {
     return () => timers.forEach(clearTimeout);
   }, [skip, ready]);
 
-  const touchShard = () => {
-    if (crypt.get().stage !== 'shard') return;
-    cryptAudio.chime(659);
-    crypt.set({ objective: '' });
-    crypt.say([{ who: 'hecate', text: 'Наконец.' }]);
-    window.setTimeout(() => {
-      crypt.set({ stage: 'rise', lines: [] });
-      window.setTimeout(() => crypt.say([{ who: 'hero', text: 'Кто ты?' }]), 2300);
-    }, 2600);
-  };
 
   return (
     <>

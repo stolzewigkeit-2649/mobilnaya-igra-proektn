@@ -27,6 +27,7 @@ export type CryptState = {
   focus: string | null;
   inspected: string[];
   looking: boolean;
+  palms: boolean;
   candlesLit: number;
   paused: boolean;
   objective: string;
@@ -42,6 +43,7 @@ const initial: CryptState = {
   focus: null,
   inspected: [],
   looking: false,
+  palms: false,
   candlesLit: 0,
   paused: false,
   objective: '',

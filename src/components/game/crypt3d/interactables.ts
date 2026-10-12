@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { crypt, type CryptState, type Line } from '@/components/game/crypt3d/crypt-store';
 import { SARCOPHAGI, PUDDLE, DOOR, HALF_D } from '@/components/game/crypt3d/layout';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
+import { cycleHands } from '@/components/game/crypt3d/hands/hand-state';
 
 export type Spot = {
   id: string;
@@ -113,7 +114,7 @@ function summon() {
     if (s.stage !== 'explore') return;
     const looked = s.inspected.includes('hands');
     cryptAudio.whisper(true);
-    crypt.set({ stage: 'hecate', objective: '', looking: false });
+    crypt.set({ stage: 'hecate', objective: '', looking: false, palms: false });
     crypt.say([...HECATE_LINES, ...(looked ? [] : [{ who: 'hero' as const, text: 'Я умер?' }]), ...HECATE_TAIL]);
   }, 900);
 }
@@ -142,10 +143,14 @@ export function interact(id: string | null) {
 
 export function lookAtHands() {
   const s = crypt.get();
-  if (s.stage !== 'explore' && s.stage !== 'gift') return;
-  const on = !s.looking;
-  crypt.set({ looking: on });
-  if (on && !s.inspected.includes('hands')) {
+  if (!['explore', 'gift', 'hecate'].includes(s.stage)) return;
+  const view = cycleHands();
+  if (view === 'palm' && !s.inspected.includes('palms')) {
+    crypt.set({ inspected: [...crypt.get().inspected, 'palms'] });
+    crypt.say([{ who: 'note', text: 'Ладони гладкие, почти без линий. Как будто судьба на них ещё не написана.' }]);
+    return;
+  }
+  if (view === 'back' && !s.inspected.includes('hands')) {
     crypt.set({ inspected: [...s.inspected, 'hands'] });
     crypt.say([
       { who: 'note', text: 'Руки твои. Но кожа на них новая, как после долгой болезни.' },

@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { crypt, input } from '@/components/game/crypt3d/crypt-store';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
 import { collide, START, BODY, SARIEL_SPOT } from '@/components/game/crypt3d/grave/grave-layout';
 import { GSPOTS } from '@/components/game/crypt3d/grave/grave-script';
+import { userLooking } from '@/components/game/crypt3d/hands/hand-state';
 
 const euler = new THREE.Euler(0, 0, 0, 'YXZ');
 const fwd = new THREE.Vector3();
@@ -15,7 +16,6 @@ const tmp = new THREE.Vector3();
 
 const GravePlayer = () => {
   const camera = useThree((s) => s.camera);
-  const gl = useThree((s) => s.gl);
   const pos = useRef(START.pos.clone());
   const yaw = useRef(START.yaw);
   const pitch = useRef(-0.08);
@@ -23,23 +23,13 @@ const GravePlayer = () => {
   const stepAcc = useRef(0);
   const crouch = useRef(0);
 
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      if (document.pointerLockElement !== gl.domElement) return;
-      input.look.dx += e.movementX;
-      input.look.dy += e.movementY;
-    };
-    document.addEventListener('mousemove', onMove);
-    return () => document.removeEventListener('mousemove', onMove);
-  }, [gl]);
-
   useFrame((_, rawDt) => {
     const dt = Math.min(rawDt, 0.05);
     const s = crypt.get();
     const busy = s.lines.length > 0 || s.choices.length > 0 || s.paused;
     const free = !busy && ['walk', 'sariel'].includes(s.stage);
 
-    if (!busy) {
+    if (!s.paused && !s.choices.length) {
       yaw.current -= input.look.dx * 0.0022;
       pitch.current -= input.look.dy * 0.0022;
     }
@@ -48,7 +38,7 @@ const GravePlayer = () => {
     pitch.current = THREE.MathUtils.clamp(pitch.current, -1.35, 1.35);
 
     const target = s.stage === 'soul' ? new THREE.Vector3(BODY.x - 0.7, 1.5, BODY.z - 0.5) : s.stage === 'talk' ? new THREE.Vector3(SARIEL_SPOT.x, 1.7, SARIEL_SPOT.z) : null;
-    if (target) {
+    if (target && !userLooking()) {
       tmp.copy(target).sub(camera.position);
       let d = Math.atan2(-tmp.x, -tmp.z) - yaw.current;
       d = Math.atan2(Math.sin(d), Math.cos(d));

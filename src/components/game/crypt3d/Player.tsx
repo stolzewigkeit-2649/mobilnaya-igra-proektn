@@ -6,6 +6,7 @@ import { resolveCollision, START_LYING, START_STAND, EYE, HECATE_POS, DOOR } fro
 import { easeInOut } from '@/components/game/crypt3d/glow';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
 import { pickFocus } from '@/components/game/crypt3d/interactables';
+import { userLooking } from '@/components/game/crypt3d/hands/hand-state';
 
 const euler = new THREE.Euler(0, 0, 0, 'YXZ');
 const fwd = new THREE.Vector3();
@@ -14,7 +15,6 @@ const tmp = new THREE.Vector3();
 
 const Player = ({ onExitReached }: { onExitReached: () => void }) => {
   const camera = useThree((s) => s.camera);
-  const gl = useThree((s) => s.gl);
   const pos = useRef(START_LYING.pos.clone());
   const yaw = useRef(START_LYING.yaw);
   const pitch = useRef(START_LYING.pitch);
@@ -23,6 +23,8 @@ const Player = ({ onExitReached }: { onExitReached: () => void }) => {
   const stepAcc = useRef(0);
   const hands = useRef(0);
   const exited = useRef(false);
+  const offYaw = useRef(0);
+  const offPitch = useRef(0);
 
   useEffect(() => {
     if (crypt.get().stage !== 'intro' && crypt.get().stage !== 'shard') {
@@ -30,14 +32,7 @@ const Player = ({ onExitReached }: { onExitReached: () => void }) => {
       pitch.current = START_STAND.pitch;
       rise.current = 1;
     }
-    const onMove = (e: MouseEvent) => {
-      if (document.pointerLockElement !== gl.domElement) return;
-      input.look.dx += e.movementX;
-      input.look.dy += e.movementY;
-    };
-    document.addEventListener('mousemove', onMove);
-    return () => document.removeEventListener('mousemove', onMove);
-  }, [gl]);
+  }, []);
 
   useFrame((_, rawDt) => {
     const dt = Math.min(rawDt, 0.05);
@@ -50,13 +45,26 @@ const Player = ({ onExitReached }: { onExitReached: () => void }) => {
     }
 
     if (s.stage === 'rise' || s.stage === 'intro' || s.stage === 'shard') {
-      if (s.stage === 'rise') rise.current = Math.min(1, rise.current + dt / 2.4);
+      if (!s.paused) {
+        offYaw.current = THREE.MathUtils.clamp(offYaw.current - input.look.dx * 0.002, -1.3, 1.3);
+        offPitch.current = THREE.MathUtils.clamp(offPitch.current - input.look.dy * 0.002, -1.1, 0.2);
+      }
+      input.look.dx = 0;
+      input.look.dy = 0;
+      if (s.stage === 'rise') {
+        rise.current = Math.min(1, rise.current + dt / 2.4);
+        offPitch.current = THREE.MathUtils.damp(offPitch.current, 0, 2, dt);
+      }
       const k = easeInOut(rise.current);
       pos.current.lerpVectors(START_LYING.pos, START_STAND.pos, k);
       pos.current.y += Math.sin(k * Math.PI) * 0.25;
-      pitch.current = THREE.MathUtils.lerp(START_LYING.pitch, START_STAND.pitch, k);
+      pitch.current = THREE.MathUtils.lerp(START_LYING.pitch, START_STAND.pitch, k) + offPitch.current;
       const roll = Math.sin(k * Math.PI) * 0.12;
-      euler.set(pitch.current, yaw.current, roll);
+      if (rise.current >= 1) {
+        yaw.current += offYaw.current;
+        offYaw.current = 0;
+      }
+      euler.set(pitch.current, yaw.current + offYaw.current, roll);
       camera.quaternion.setFromEuler(euler);
       camera.position.copy(pos.current);
       if (s.stage === 'intro' || s.stage === 'shard') {
@@ -76,7 +84,7 @@ const Player = ({ onExitReached }: { onExitReached: () => void }) => {
     input.look.dy = 0;
     pitch.current = THREE.MathUtils.clamp(pitch.current, -1.35, 1.35);
 
-    if (s.stage === 'hecate') {
+    if (s.stage === 'hecate' && !userLooking()) {
       tmp.set(HECATE_POS.x, 1.8, HECATE_POS.z).sub(pos.current);
       const targetYaw = Math.atan2(-tmp.x, -tmp.z);
       const targetPitch = Math.atan2(tmp.y, Math.hypot(tmp.x, tmp.z));
@@ -115,7 +123,7 @@ const Player = ({ onExitReached }: { onExitReached: () => void }) => {
     const bobY = Math.sin(bob.current * 2) * 0.028 * Math.min(1, moving);
     const bobX = Math.cos(bob.current) * 0.018 * Math.min(1, moving);
 
-    const handPitch = THREE.MathUtils.lerp(pitch.current, -1.05, hands.current);
+    const handPitch = THREE.MathUtils.lerp(pitch.current, Math.min(pitch.current, -0.25), hands.current * 0.5);
     euler.set(handPitch, yaw.current, bobX * 0.6);
     camera.quaternion.setFromEuler(euler);
     camera.position.set(pos.current.x + bobX * Math.cos(yaw.current), EYE + bobY, pos.current.z);

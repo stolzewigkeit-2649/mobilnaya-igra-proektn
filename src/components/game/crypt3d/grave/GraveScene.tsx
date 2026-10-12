@@ -6,6 +6,7 @@ import Terrain from '@/components/game/crypt3d/grave/Terrain';
 import Graves from '@/components/game/crypt3d/grave/Graves';
 import Characters from '@/components/game/crypt3d/grave/Characters';
 import GravePlayer from '@/components/game/crypt3d/grave/GravePlayer';
+import FirstPersonHands from '@/components/game/crypt3d/hands/FirstPersonHands';
 import { MOON_DIR } from '@/components/game/crypt3d/grave/grave-layout';
 import { glowTexture } from '@/components/game/crypt3d/glow';
 import { crypt } from '@/components/game/crypt3d/crypt-store';
@@ -114,6 +115,7 @@ const GraveScene = ({ onReady }: { onReady: () => void }) => {
       )}
       <Sparkles count={low ? 40 : 110} scale={[24, 3, 24]} position={[0, 1.4, 0]} size={1.3} speed={0.15} opacity={0.3} color="#b9c8ff" />
       <GravePlayer />
+      <FirstPersonHands />
     </>
   );
 };

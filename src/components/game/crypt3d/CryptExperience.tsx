@@ -6,6 +6,7 @@ import Shell3D, { isTouch } from '@/components/game/crypt3d/Shell3D';
 import { crypt, useCrypt, type Stage } from '@/components/game/crypt3d/crypt-store';
 import { SPOTS, interact, lookAtHands, advanceLine, resetSummon } from '@/components/game/crypt3d/interactables';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
+import { touchShard } from '@/components/game/crypt3d/hands/hand-state';
 
 type Props = { onComplete: () => void; onExit: () => void; startStage?: Stage; volume?: number };
 
@@ -41,9 +42,9 @@ const CryptExperience = ({ onComplete, onExit, startStage = 'intro', volume = 0.
       loading="Склеп пробуждается…"
       accent="#7fb0ff"
       freeStages={FREE}
-      helpText="WASD — идти · Shift — быстрее · мышь — смотреть · E — осмотреть · H — руки"
+      helpText="WASD — идти · Shift — быстрее · мышь — крутить головой · E / клик — действие · H — руки (нажми ещё раз — ладони)"
       fade={fade}
-      onInteract={() => interact(crypt.get().focus)}
+      onInteract={() => (crypt.get().stage === 'shard' ? touchShard() : interact(crypt.get().focus))}
       onHands={lookAtHands}
       onAdvance={advanceLine}
       onSkip={onComplete}

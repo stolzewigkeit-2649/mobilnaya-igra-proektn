@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import Icon from '@/components/ui/icon';
 import { crypt, useCrypt, type Line } from '@/components/game/crypt3d/crypt-store';
-import { Joystick, LookPad } from '@/components/game/crypt3d/Joystick';
+import { Joystick } from '@/components/game/crypt3d/Joystick';
 
 const WHO: Record<Line['who'], { name: string; color: string }> = {
   hecate: { name: 'Геката', color: '#c9a6ff' },
@@ -116,7 +116,6 @@ const Hud = ({ touch, free, spots, onInteract, onAdvance, onHands }: Props) => {
     <div className="pointer-events-none absolute inset-0 z-10 select-none">
       {walk && touch && (
         <div className="pointer-events-auto">
-          <LookPad />
           <Joystick />
         </div>
       )}
@@ -144,6 +143,16 @@ const Hud = ({ touch, free, spots, onInteract, onAdvance, onHands }: Props) => {
       )}
 
       <CardView />
+
+      {touch && onHands && !walk && !busy && (
+        <button
+          type="button"
+          onClick={onHands}
+          className="pointer-events-auto absolute bottom-7 right-5 flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-white/10 backdrop-blur"
+        >
+          <Icon name="Hand" size={20} className="text-white" />
+        </button>
+      )}
 
       {touch && walk && (
         <div className="pointer-events-auto absolute bottom-7 right-5 flex flex-col items-end gap-3">

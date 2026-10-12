@@ -5,6 +5,7 @@ import GraveScene from '@/components/game/crypt3d/grave/GraveScene';
 import { crypt, useCrypt } from '@/components/game/crypt3d/crypt-store';
 import { GSPOTS, graveInteract, graveReset, graveResult, type GraveResult } from '@/components/game/crypt3d/grave/grave-script';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
+import { cycleHands } from '@/components/game/crypt3d/hands/hand-state';
 
 type Props = { onComplete: (r: GraveResult | null) => void; onExit: () => void; volume?: number };
 
@@ -38,10 +39,11 @@ const GraveExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
       loading="Луна поднимается над крестами…"
       accent="#b9c8ff"
       freeStages={FREE}
-      helpText="WASD — идти · Shift — быстрее · мышь — смотреть · E — действие · 1–2 — выбор ответа"
+      helpText="WASD — идти · Shift — быстрее · мышь — крутить головой · E / клик — действие · H — руки · 1–2 — ответ"
       fade={fade}
       onInteract={() => graveInteract(crypt.get().focus)}
       onAdvance={() => crypt.advance()}
+      onHands={cycleHands}
       onSkip={() => onComplete(null)}
       onExit={onExit}
       scene={<GraveScene onReady={onReady} />}
@@ -57,6 +59,7 @@ const GraveExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
             spots={GSPOTS}
             onInteract={graveInteract}
             onAdvance={() => crypt.advance()}
+            onHands={cycleHands}
           />
         </>
       }

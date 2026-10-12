@@ -4,6 +4,8 @@ import { useProgress } from '@react-three/drei';
 import Icon from '@/components/ui/icon';
 import { crypt, input, useCrypt } from '@/components/game/crypt3d/crypt-store';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
+import { LookPad } from '@/components/game/crypt3d/Joystick';
+import { look } from '@/components/game/crypt3d/hands/hand-state';
 
 type Props = {
   scene: ReactNode;
@@ -54,6 +56,7 @@ const Shell3D = (p: Props) => {
   const choosing = useCrypt((s) => s.choices.length > 0);
   const [locked, setLocked] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
+  const lockedAt = useRef(0);
   const handlers = useRef(p);
   handlers.current = p;
 
@@ -72,10 +75,18 @@ const Shell3D = (p: Props) => {
       if (e.code === 'Escape') crypt.set({ paused: true });
     };
     const up = (e: KeyboardEvent) => input.keys.delete(e.code);
+    const move = (e: MouseEvent) => {
+      if (!document.pointerLockElement) return;
+      look.lastInput = performance.now();
+      input.look.dx += e.movementX;
+      input.look.dy += e.movementY;
+    };
+    document.addEventListener('mousemove', move);
     const lockChange = () => {
       setLocked(!!document.pointerLockElement);
+      if (document.pointerLockElement) lockedAt.current = performance.now();
       const s = crypt.get();
-      if (!document.pointerLockElement && handlers.current.freeStages.includes(s.stage) && !s.choices.length)
+      if (!document.pointerLockElement && !s.choices.length && !s.paused && performance.now() - lockedAt.current > 300)
         crypt.set({ paused: true });
     };
     window.addEventListener('keydown', down);
@@ -84,6 +95,7 @@ const Shell3D = (p: Props) => {
     return () => {
       window.removeEventListener('keydown', down);
       window.removeEventListener('keyup', up);
+      document.removeEventListener('mousemove', move);
       document.removeEventListener('pointerlockchange', lockChange);
       input.keys.clear();
       input.move.x = input.move.y = 0;
@@ -94,11 +106,12 @@ const Shell3D = (p: Props) => {
     cryptAudio.unlock();
     const s = crypt.get();
     if (s.choices.length) return;
-    if (document.pointerLockElement && s.lines.length) {
-      p.onAdvance();
+    if (document.pointerLockElement) {
+      if (s.lines.length) p.onAdvance();
+      else p.onInteract();
       return;
     }
-    if (!touch && p.freeStages.includes(s.stage)) wrap.current?.querySelector('canvas')?.requestPointerLock?.();
+    if (!touch && !s.paused) wrap.current?.querySelector('canvas')?.requestPointerLock?.();
     if (s.paused) crypt.set({ paused: false });
   };
 
@@ -122,6 +135,11 @@ const Shell3D = (p: Props) => {
         style={{ background: 'radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.85) 100%)' }}
       />
       <Loader ready={p.ready} text={p.loading} accent={p.accent} />
+      {touch && !paused && !choosing && p.ready && (
+        <div className="absolute inset-0 z-[1]">
+          <LookPad />
+        </div>
+      )}
       {p.overlay}
 
       <button
@@ -154,9 +172,9 @@ const Shell3D = (p: Props) => {
         </div>
       )}
 
-      {p.freeStages.includes(stage) && !paused && !touch && !locked && !choosing && p.ready && (
+      {!paused && !touch && !locked && !choosing && p.ready && stage !== 'leaving' && (
         <p className="pointer-events-none absolute inset-x-0 bottom-6 z-10 text-center text-xs text-white/50">
-          Кликни, чтобы управлять взглядом
+          Кликни, чтобы осматриваться мышью
         </p>
       )}
 

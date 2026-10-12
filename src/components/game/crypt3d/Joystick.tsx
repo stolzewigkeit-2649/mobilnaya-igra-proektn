@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { input } from '@/components/game/crypt3d/crypt-store';
+import { look } from '@/components/game/crypt3d/hands/hand-state';
 
 const R = 52;
 
@@ -58,6 +59,7 @@ export const LookPad = () => {
   return (
     <div
       className="absolute inset-y-0 right-0 w-[55%] touch-none"
+      onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => {
         last.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
         (e.target as HTMLElement).setPointerCapture(e.pointerId);
@@ -65,6 +67,7 @@ export const LookPad = () => {
       onPointerMove={(e) => {
         const l = last.current;
         if (!l || l.id !== e.pointerId) return;
+        look.lastInput = performance.now();
         input.look.dx += (e.clientX - l.x) * 1.6;
         input.look.dy += (e.clientY - l.y) * 1.6;
         last.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
