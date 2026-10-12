@@ -118,13 +118,13 @@ export function useStory({ difficulty, faction }: Options) {
   );
 
   const jumpTo = useCallback(
-    (sceneId: string, extra: { flags?: string[]; skipped?: string[]; sanity?: number; evidence?: string[] } = {}) => {
+    (sceneId: string, extra: { flags?: string[]; skipped?: string[]; sanity?: number; evidence?: string[]; rep?: Record<string, number> } = {}) => {
       setState((prev) => {
         if (!prev || !SCENE_MAP[sceneId]) return prev;
         const k = PENALTY[difficulty];
         let next = applyEffects(
           { ...prev, event: null, note: null },
-          { flags: extra.flags, sanity: extra.sanity, evidence: extra.evidence as never },
+          { flags: extra.flags, sanity: extra.sanity, evidence: extra.evidence as never, rep: extra.rep as never },
           k,
         );
         (extra.skipped ?? []).forEach((id) => {

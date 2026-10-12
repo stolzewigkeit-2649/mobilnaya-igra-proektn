@@ -9,7 +9,8 @@ type Set4 =
   | 'marble_01'
   | 'rock_wall_08'
   | 'forrest_ground_01'
-  | 'bark_brown_02';
+  | 'bark_brown_02'
+  | 'old_planks_02';
 
 const MAPS: Record<Set4, string[]> = {
   castle_brick_07: ['diff', 'nor_gl', 'rough', 'ao'],
@@ -18,6 +19,7 @@ const MAPS: Record<Set4, string[]> = {
   rock_wall_08: ['diff', 'nor_gl', 'rough'],
   forrest_ground_01: ['diff', 'nor_gl', 'rough'],
   bark_brown_02: ['diff', 'nor_gl', 'rough'],
+  old_planks_02: ['diff', 'nor_gl', 'rough'],
 };
 
 const url = (set: Set4, m: string) => `/crypt/${set}_${m}.webp`;
