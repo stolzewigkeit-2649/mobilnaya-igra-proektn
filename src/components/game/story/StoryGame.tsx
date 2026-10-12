@@ -9,6 +9,7 @@ import CryptInvite from '@/components/game/crypt3d/CryptInvite';
 import { useGameSettings } from '@/hooks/use-game-settings';
 
 const CryptExperience = lazy(() => import('@/components/game/crypt3d/CryptExperience'));
+const GraveExperience = lazy(() => import('@/components/game/crypt3d/grave/GraveExperience'));
 import { CHAPTER_TITLE, SCENE_TOTAL } from '@/data/story';
 import { useStory } from '@/hooks/use-story';
 import { useCharacter } from '@/hooks/use-character';
@@ -27,7 +28,7 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
   const heroName = archetype?.name.trim() || null;
   const story = useStory({ difficulty, faction: character.faction });
   const [confirm, setConfirm] = useState(false);
-  const [in3d, setIn3d] = useState(false);
+  const [in3d, setIn3d] = useState<null | 'crypt' | 'grave'>(null);
   const { settings } = useGameSettings();
   const top = useRef<HTMLDivElement>(null);
 
@@ -115,25 +116,48 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
       </div>
 
       {story.scene.id === 'p-awaken' && !story.state.flags.includes('crypt3d-done') && !in3d && (
-        <CryptInvite onEnter={() => setIn3d(true)} onText={() => story.addFlag('crypt3d-done')} />
+        <CryptInvite kind="crypt" onEnter={() => setIn3d('crypt')} onText={() => story.addFlag('crypt3d-done')} />
+      )}
+
+      {story.scene.id === 'p-first-soul' && !story.state.flags.includes('grave3d-done') && !in3d && (
+        <CryptInvite kind="grave" onEnter={() => setIn3d('grave')} onText={() => story.addFlag('grave3d-done')} />
       )}
 
       {in3d && (
         <Suspense
           fallback={
             <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black font-display italic text-white/70">
-              Склеп пробуждается…
+              Загружаю 3D…
             </div>
           }
         >
-          <CryptExperience
-            volume={(settings.master / 100) * 0.9}
-            onExit={() => setIn3d(false)}
-            onComplete={() => {
-              setIn3d(false);
-              story.jumpTo('p-first-soul', { flags: ['crypt3d-done'], skipped: ['p-hekate'] });
-            }}
-          />
+          {in3d === 'crypt' ? (
+            <CryptExperience
+              volume={(settings.master / 100) * 0.9}
+              onExit={() => setIn3d(null)}
+              onComplete={() => {
+                setIn3d(null);
+                story.jumpTo('p-first-soul', { flags: ['crypt3d-done'], skipped: ['p-hekate'] });
+              }}
+            />
+          ) : (
+            <GraveExperience
+              volume={(settings.master / 100) * 0.9}
+              onExit={() => setIn3d(null)}
+              onComplete={(r) => {
+                setIn3d(null);
+                if (!r) {
+                  story.addFlag('grave3d-done');
+                  return;
+                }
+                story.jumpTo('c1-village', {
+                  flags: ['grave3d-done', ...r.flags],
+                  sanity: r.sanity,
+                  skipped: ['p-soul-speaks', 'p-sariel'],
+                });
+              }}
+            />
+          )}
         </Suspense>
       )}
 

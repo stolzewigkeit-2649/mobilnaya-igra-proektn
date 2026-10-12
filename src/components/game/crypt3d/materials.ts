@@ -3,13 +3,21 @@ import { useTexture } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-type Set4 = 'castle_brick_07' | 'cobblestone_floor_08' | 'marble_01' | 'rock_wall_08';
+type Set4 =
+  | 'castle_brick_07'
+  | 'cobblestone_floor_08'
+  | 'marble_01'
+  | 'rock_wall_08'
+  | 'forrest_ground_01'
+  | 'bark_brown_02';
 
 const MAPS: Record<Set4, string[]> = {
   castle_brick_07: ['diff', 'nor_gl', 'rough', 'ao'],
   cobblestone_floor_08: ['diff', 'nor_gl', 'rough', 'ao'],
   marble_01: ['diff', 'nor_gl', 'rough', 'ao'],
   rock_wall_08: ['diff', 'nor_gl', 'rough'],
+  forrest_ground_01: ['diff', 'nor_gl', 'rough'],
+  bark_brown_02: ['diff', 'nor_gl', 'rough'],
 };
 
 const url = (set: Set4, m: string) => `/crypt/${set}_${m}.webp`;

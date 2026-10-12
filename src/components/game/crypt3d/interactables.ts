@@ -161,16 +161,21 @@ export function resetSummon() {
 
 export function advanceLine() {
   const s = crypt.get();
-  if (!s.lines.length) return;
-  if (s.lineIndex < s.lines.length - 1) {
-    crypt.set({ lineIndex: s.lineIndex + 1 });
-    return;
-  }
-  crypt.set({ lines: [], lineIndex: 0 });
+  if (!crypt.advance()) return;
   if (summonPending && s.stage === 'explore') summon();
   if (s.stage === 'hecate') {
     cryptAudio.whisper(false);
     cryptAudio.chime(392);
-    crypt.set({ stage: 'gift', objective: 'Выйди наверх по лестнице' });
+    crypt.set({
+      stage: 'gift',
+      objective: 'Выйди наверх по лестнице',
+      card: {
+        kicker: 'Получено',
+        title: 'Бессмертие некроманта',
+        text: 'Смерть будет возвращать тебя обратно. Но каждый раз — забирая часть рассудка.',
+        icon: 'Infinity',
+        color: '#c9a6ff',
+      },
+    });
   }
 }
