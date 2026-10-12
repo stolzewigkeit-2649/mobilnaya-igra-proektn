@@ -49,8 +49,8 @@ const GravePlayer = () => {
     let moving = 0;
     if (free) {
       const k = input.keys;
-      let mx = input.move.x + (k.has('KeyD') || k.has('ArrowRight') ? 1 : 0) - (k.has('KeyA') || k.has('ArrowLeft') ? 1 : 0);
-      let mz = input.move.y + (k.has('KeyW') || k.has('ArrowUp') ? 1 : 0) - (k.has('KeyS') || k.has('ArrowDown') ? 1 : 0);
+      let mx = input.move.x + (k.has('KeyD') ? 1 : 0) - (k.has('KeyA') ? 1 : 0);
+      let mz = input.move.y + (k.has('KeyW') ? 1 : 0) - (k.has('KeyS') ? 1 : 0);
       const len = Math.hypot(mx, mz);
       if (len > 1) {
         mx /= len;

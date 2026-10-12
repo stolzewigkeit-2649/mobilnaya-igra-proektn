@@ -42,7 +42,7 @@ const CryptExperience = ({ onComplete, onExit, startStage = 'intro', volume = 0.
       loading="Склеп пробуждается…"
       accent="#7fb0ff"
       freeStages={FREE}
-      helpText="WASD — идти · Shift — быстрее · мышь — крутить головой · E / клик — действие · H — руки (нажми ещё раз — ладони)"
+      helpText="Список всех клавиш — в правом нижнем углу (F1)"
       fade={fade}
       onInteract={() => (crypt.get().stage === 'shard' ? touchShard() : interact(crypt.get().focus))}
       onHands={lookAtHands}

@@ -39,7 +39,7 @@ const GraveExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
       loading="Луна поднимается над крестами…"
       accent="#b9c8ff"
       freeStages={FREE}
-      helpText="WASD — идти · Shift — быстрее · мышь — крутить головой · E / клик — действие · H — руки · 1–2 — ответ"
+      helpText="Список всех клавиш — в правом нижнем углу (F1)"
       fade={fade}
       onInteract={() => graveInteract(crypt.get().focus)}
       onAdvance={() => crypt.advance()}

@@ -49,7 +49,7 @@ const CellarExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
       loading="Половица поднимается…"
       accent="#d07a5f"
       freeStages={FREE}
-      helpText="WASD — идти · Shift — быстрее · мышь — крутить головой · E / клик — осмотреть · H — руки · 1–2 — ответ"
+      helpText="Список всех клавиш — в правом нижнем углу (F1)"
       fade={fade}
       onInteract={interact}
       onHands={cycleHands}

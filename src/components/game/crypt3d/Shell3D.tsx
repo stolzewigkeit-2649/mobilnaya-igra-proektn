@@ -6,6 +6,8 @@ import { crypt, input, useCrypt } from '@/components/game/crypt3d/crypt-store';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
 import { LookPad } from '@/components/game/crypt3d/Joystick';
 import { look } from '@/components/game/crypt3d/hands/hand-state';
+import KeyTurn from '@/components/game/crypt3d/KeyTurn';
+import KeysPanel from '@/components/game/crypt3d/KeysPanel';
 
 type Props = {
   scene: ReactNode;
@@ -62,6 +64,7 @@ const Shell3D = (p: Props) => {
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
+      if (e.code.startsWith('Arrow') || e.code === 'Space') e.preventDefault();
       input.keys.add(e.code);
       const s = crypt.get();
       if (s.choices.length && /^Digit[1-9]$/.test(e.code)) {
@@ -129,6 +132,7 @@ const Shell3D = (p: Props) => {
     <div ref={wrap} className="fixed inset-0 z-[60] bg-black" onPointerDown={lock}>
       <Canvas shadows dpr={[1, 1.75]} camera={{ fov: 68, near: 0.03, far: 80 }} gl={{ antialias: true, powerPreference: 'high-performance' }}>
         <Suspense fallback={null}>{p.scene}</Suspense>
+        <KeyTurn />
       </Canvas>
       <div
         className="pointer-events-none absolute inset-0"
@@ -141,6 +145,7 @@ const Shell3D = (p: Props) => {
         </div>
       )}
       {p.overlay}
+      {!touch && p.ready && !paused && <KeysPanel />}
 
       <button
         type="button"
