@@ -10,6 +10,9 @@ export const BASE_KEYS: KeyRow[] = [
   { keys: ['←', '→'], label: 'повернуть влево / вправо' },
   { keys: ['↑', '↓'], label: 'смотреть вверх / вниз' },
   { keys: ['E', 'Клик'], label: 'действие / осмотреть' },
+  { keys: ['R'], label: 'держать — призвать душу' },
+  { keys: ['F'], label: 'держать — поднять мертвеца' },
+  { keys: ['F'], label: 'ещё раз — отпустить его' },
   { keys: ['H'], label: 'руки → ладони → убрать' },
   { keys: ['Enter', 'Пробел'], label: 'следующая реплика' },
   { keys: ['1', '2'], label: 'выбрать ответ' },
@@ -58,7 +61,7 @@ const KeysPanel = ({ rows = BASE_KEYS }: { rows?: KeyRow[] }) => {
           </div>
           <ul className="space-y-1.5">
             {rows.map((r) => (
-              <li key={r.label} className="flex items-center justify-between gap-2">
+              <li key={r.label + r.keys.join()} className="flex items-center justify-between gap-2">
                 <span className="flex shrink-0 flex-wrap gap-0.5">
                   {r.keys.map((k) => (
                     <Kbd key={k}>{k}</Kbd>

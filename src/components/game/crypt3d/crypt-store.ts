@@ -103,6 +103,8 @@ export const input = {
   look: { dx: 0, dy: 0 },
   keys: new Set<string>(),
   interact: 0,
+  holdSoul: false,
+  holdRaise: false,
 };
 
 export function useCrypt<T>(pick: (s: CryptState) => T): T {

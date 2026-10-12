@@ -8,6 +8,7 @@ import { LookPad } from '@/components/game/crypt3d/Joystick';
 import { look } from '@/components/game/crypt3d/hands/hand-state';
 import KeyTurn from '@/components/game/crypt3d/KeyTurn';
 import KeysPanel from '@/components/game/crypt3d/KeysPanel';
+import { necro } from '@/components/game/crypt3d/necro/necro';
 
 type Props = {
   scene: ReactNode;
@@ -71,6 +72,12 @@ const Shell3D = (p: Props) => {
         const c = s.choices[Number(e.code.slice(5)) - 1];
         if (c) crypt.choose(c.id);
         return;
+      }
+      if (!e.repeat && e.code === 'KeyR') necro.start('soul');
+      if (!e.repeat && e.code === 'KeyF') {
+        const raised = necro.raisedId();
+        if (raised && raised === necro.get().target) necro.release(raised);
+        else necro.start('raise');
       }
       if (e.code === 'KeyE' && !s.lines.length) handlers.current.onInteract();
       if (e.code === 'KeyH') handlers.current.onHands?.();
@@ -178,7 +185,7 @@ const Shell3D = (p: Props) => {
       )}
 
       {!paused && !touch && !locked && !choosing && p.ready && stage !== 'leaving' && (
-        <p className="pointer-events-none absolute inset-x-0 bottom-6 z-10 text-center text-xs text-white/50">
+        <p className="pointer-events-none absolute inset-x-0 bottom-28 z-10 text-center text-xs text-white/50">
           Кликни, чтобы осматриваться мышью
         </p>
       )}

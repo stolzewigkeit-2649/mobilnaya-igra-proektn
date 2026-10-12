@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import Hud from '@/components/game/crypt3d/Hud';
+import NecroHud from '@/components/game/crypt3d/necro/NecroHud';
+import { withNecro } from '@/components/game/crypt3d/necro/necro-result';
 import Shell3D, { isTouch } from '@/components/game/crypt3d/Shell3D';
 import CellarScene from '@/components/game/crypt3d/cellar/CellarScene';
 import LedgerView from '@/components/game/crypt3d/cellar/LedgerView';
@@ -34,7 +36,7 @@ const CellarExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
     document.exitPointerLock?.();
     cryptAudio.chime(262);
     setFade(true);
-    const t = window.setTimeout(() => onComplete(cellarResult()), 1800);
+    const t = window.setTimeout(() => onComplete(withNecro(cellarResult())), 1800);
     return () => window.clearTimeout(t);
   }, [stage, onComplete]);
 
@@ -59,6 +61,7 @@ const CellarExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
       scene={<CellarScene onReady={onReady} />}
       overlay={
         <>
+          {stage === 'walk' && <NecroHud touch={isTouch()} />}
           <Hud touch={isTouch()} free={FREE.includes(stage)} spots={CSPOTS} onInteract={cellarInteract} onAdvance={() => crypt.advance()} onHands={cycleHands} />
           <LedgerView />
         </>

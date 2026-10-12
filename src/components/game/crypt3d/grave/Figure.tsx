@@ -17,10 +17,11 @@ type Props = FigureMats & {
   legR?: [number, number, number];
   head?: [number, number, number];
   children?: ReactNode;
+  limbRef?: (key: 'armL' | 'armR' | 'legL' | 'legR' | 'head', o: THREE.Object3D | null) => void;
 };
 
-const Limb = ({ mat, len, r, rot, at }: { mat: THREE.Material; len: number; r: number; rot?: [number, number, number]; at: [number, number, number] }) => (
-  <group position={at} rotation={rot ?? [0, 0, 0]}>
+const Limb = ({ mat, len, r, rot, at, gref }: { mat: THREE.Material; len: number; r: number; rot?: [number, number, number]; at: [number, number, number]; gref?: (o: THREE.Object3D | null) => void }) => (
+  <group ref={gref} position={at} rotation={rot ?? [0, 0, 0]}>
     <mesh material={mat} position={[0, -len / 2, 0]} castShadow>
       <capsuleGeometry args={[r, len - r * 2, 6, 12]} />
     </mesh>
@@ -28,10 +29,10 @@ const Limb = ({ mat, len, r, rot, at }: { mat: THREE.Material; len: number; r: n
 );
 
 const Figure = forwardRef<THREE.Group, Props>(
-  ({ skin, cloth, pants, hair, hairLong, coat, armL, armR, legL, legR, head, children }, ref) => (
+  ({ skin, cloth, pants, hair, hairLong, coat, armL, armR, legL, legR, head, children, limbRef }, ref) => (
     <group ref={ref}>
-      <Limb mat={pants} len={0.9} r={0.075} at={[-0.1, 0.92, 0]} rot={legL} />
-      <Limb mat={pants} len={0.9} r={0.075} at={[0.1, 0.92, 0]} rot={legR} />
+      <Limb mat={pants} len={0.9} r={0.075} at={[-0.1, 0.92, 0]} rot={legL} gref={limbRef && ((o) => limbRef('legL', o))} />
+      <Limb mat={pants} len={0.9} r={0.075} at={[0.1, 0.92, 0]} rot={legR} gref={limbRef && ((o) => limbRef('legR', o))} />
       <mesh material={cloth} position={[0, 1.2, 0]} scale={[1, 1, 0.62]} castShadow>
         <capsuleGeometry args={[0.18, 0.4, 8, 16]} />
       </mesh>
@@ -40,12 +41,12 @@ const Figure = forwardRef<THREE.Group, Props>(
           <cylinderGeometry args={[0.22, 0.36, 0.9, 20, 1, true]} />
         </mesh>
       )}
-      <Limb mat={cloth} len={0.62} r={0.06} at={[-0.25, 1.46, 0]} rot={armL ?? [0, 0, 0.12]} />
-      <Limb mat={cloth} len={0.62} r={0.06} at={[0.25, 1.46, 0]} rot={armR ?? [0, 0, -0.12]} />
+      <Limb mat={cloth} len={0.62} r={0.06} at={[-0.25, 1.46, 0]} rot={armL ?? [0, 0, 0.12]} gref={limbRef && ((o) => limbRef('armL', o))} />
+      <Limb mat={cloth} len={0.62} r={0.06} at={[0.25, 1.46, 0]} rot={armR ?? [0, 0, -0.12]} gref={limbRef && ((o) => limbRef('armR', o))} />
       <mesh material={skin} position={[0, 1.55, 0]} castShadow>
         <cylinderGeometry args={[0.05, 0.06, 0.12, 12]} />
       </mesh>
-      <group position={[0, 1.7, 0]} rotation={head ?? [0, 0, 0]}>
+      <group ref={limbRef && ((o) => limbRef('head', o))} position={[0, 1.7, 0]} rotation={head ?? [0, 0, 0]}>
         <mesh material={skin} scale={[0.86, 1.06, 0.95]} castShadow>
           <sphereGeometry args={[0.115, 24, 18]} />
         </mesh>

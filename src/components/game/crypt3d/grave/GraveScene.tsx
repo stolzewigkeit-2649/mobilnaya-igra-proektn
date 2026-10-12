@@ -8,6 +8,10 @@ import Graves from '@/components/game/crypt3d/grave/Graves';
 import Characters from '@/components/game/crypt3d/grave/Characters';
 import GravePlayer from '@/components/game/crypt3d/grave/GravePlayer';
 import FirstPersonHands from '@/components/game/crypt3d/hands/FirstPersonHands';
+import NecroSystem from '@/components/game/crypt3d/necro/NecroSystem';
+import { GRAVE_CORPSES } from '@/components/game/crypt3d/necro/corpses';
+
+const necroOn = () => ['walk', 'sariel'].includes(crypt.get().stage);
 import { MOON_DIR } from '@/components/game/crypt3d/grave/grave-layout';
 import { glowTexture } from '@/components/game/crypt3d/glow';
 import { crypt } from '@/components/game/crypt3d/crypt-store';
@@ -112,6 +116,7 @@ const GraveScene = ({ onReady }: { onReady: () => void }) => {
       <GroundMist count={low ? 16 : 34} />
       <Sparkles count={low ? 40 : 110} scale={[24, 3, 24]} position={[0, 1.4, 0]} size={1.3} speed={0.15} opacity={0.3} color="#b9c8ff" />
       <GravePlayer />
+      <NecroSystem corpses={GRAVE_CORPSES} enabled={necroOn} />
       <FirstPersonHands />
     </>
   );

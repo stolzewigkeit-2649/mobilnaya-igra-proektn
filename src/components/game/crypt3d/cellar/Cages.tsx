@@ -98,7 +98,7 @@ const Cage = ({ x, z, captive, iron, straw, mats, open }: {
       <mesh material={straw} position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0.3]} receiveShadow>
         <circleGeometry args={[0.6, 18]} />
       </mesh>
-      {captive !== 'empty' && <Captive alive={captive === 'alive'} mats={mats} />}
+      {captive === 'alive' && <Captive alive={captive === 'alive'} mats={mats} />}
       {captive === 'empty' && (
         <mesh position={[0.2, 0.03, 0.3]} rotation={[-Math.PI / 2, 0, 0.8]}>
           <planeGeometry args={[0.25, 0.12]} />

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { crypt, type Line } from '@/components/game/crypt3d/crypt-store';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
+import { necro } from '@/components/game/crypt3d/necro/necro';
 import { CAGES, TABLE, CIRCLE, ALTAR, SHELF, STAIRS, HD } from '@/components/game/crypt3d/cellar/cellar-layout';
 
 export type CellarResult = { flags: string[]; sanity: number; rep: number };
@@ -134,7 +135,7 @@ export function cellarInteract(id: string | null) {
     ]);
   if (id === 'altar') {
     crypt.say(
-      has('altar-hint') || result.flags.includes('altar-hint')
+      has('altar-hint') || result.flags.includes('altar-hint') || necro.get().flags.includes('altar-hint')
         ? [L('note', 'Ты проводишь рукой по боковой стенке. Шов. Тонкий, как волос. Из-за алтаря тянет сквозняком.')]
         : [L('note', 'Белое полотно, золотой крест. Самое чистое место в этом подвале. От этого только страшнее.')],
     );

@@ -9,6 +9,12 @@ import Workbench from '@/components/game/crypt3d/cellar/Workbench';
 import Lanterns from '@/components/game/crypt3d/cellar/Lanterns';
 import CellarPlayer from '@/components/game/crypt3d/cellar/CellarPlayer';
 import FirstPersonHands from '@/components/game/crypt3d/hands/FirstPersonHands';
+import NecroSystem from '@/components/game/crypt3d/necro/NecroSystem';
+import { CELLAR_CORPSES } from '@/components/game/crypt3d/necro/corpses';
+import { crypt } from '@/components/game/crypt3d/crypt-store';
+import { ledgerUi } from '@/components/game/crypt3d/cellar/cellar-script';
+
+const necroOn = () => crypt.get().stage === 'walk' && !ledgerUi.open;
 import { ROOM } from '@/components/game/crypt3d/cellar/cellar-layout';
 
 const Setup = () => {
@@ -50,6 +56,7 @@ const CellarScene = ({ onReady }: { onReady: () => void }) => {
       <Lanterns />
       <Sparkles count={low ? 30 : 90} scale={[7, ROOM.h, 10]} position={[0, ROOM.h / 2, 0]} size={1.2} speed={0.1} opacity={0.3} color="#d8b890" />
       <CellarPlayer />
+      <NecroSystem corpses={CELLAR_CORPSES} enabled={necroOn} />
       <FirstPersonHands sleeve="#1b1714" />
     </>
   );
