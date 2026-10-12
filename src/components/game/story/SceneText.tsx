@@ -1,7 +1,7 @@
 import { gendered } from '@/data/story/voice';
 
 const SPEAKERS: Record<string, string> = {
-  'ГЕКАТА': '#b98ae0',
+  'ГЕКАТА': '#d4b06a',
   'САРИЭЛ': '#b9c8ff',
   'ТЫ': 'hsl(var(--ink))',
   'ДУША': '#8ab4ff',
@@ -12,6 +12,8 @@ const SPEAKERS: Record<string, string> = {
   'ЛЖЕБОГ': '#f2e6b8',
   'ГОЛОС': '#b98ae0',
 };
+
+const AVATARS: Record<string, string> = { 'ГЕКАТА': '/gods/hekate-face.webp' };
 
 const parse = (line: string) => {
   const m = line.match(/^([А-ЯЁ][А-ЯЁ ]{1,24}):\s+(.*)$/);
@@ -40,7 +42,10 @@ const SceneText = ({ line, gender, delay }: SceneTextProps) => {
       className={`animate-fade border-l-2 py-0.5 pl-3.5 ${hero ? 'ml-4 sm:ml-8' : ''}`}
       style={{ ...style, borderColor: color }}
     >
-      <p className="text-[0.62rem] font-bold uppercase tracking-[0.2em]" style={{ color }}>
+      <p className="flex items-center gap-2 text-[0.62rem] font-bold uppercase tracking-[0.2em]" style={{ color }}>
+        {AVATARS[said.who] && (
+          <img src={AVATARS[said.who]} alt="" className="h-7 w-7 rounded-full object-cover" style={{ boxShadow: `0 0 0 1.5px ${color}, 0 0 12px -2px ${color}` }} />
+        )}
         {hero ? 'Ты' : said.who.charAt(0) + said.who.slice(1).toLowerCase()}
       </p>
       <p className="mt-0.5 font-display text-[0.98rem] italic leading-[1.6] text-foreground">

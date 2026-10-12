@@ -9,6 +9,8 @@ export type LoreGod = {
   giftName: string;
   giftEffect: string;
   price: string;
+  portrait?: string;
+  full?: string;
 };
 
 export const LORE_GODS: LoreGod[] = [
@@ -17,8 +19,10 @@ export const LORE_GODS: LoreGod[] = [
     name: 'Геката',
     title: 'Хозяйка Перекрёстков',
     icon: 'KeyRound',
-    glow: '#9b59d0',
-    symbol: 'Ключ и факел, скрещённые над тремя дорогами',
+    glow: '#c9a35a',
+    portrait: '/gods/hekate-face.webp',
+    full: '/gods/hekate.webp',
+    symbol: 'Тройная луна над челом, связка бронзовых ключей на поясе и факел с золотым огнём',
     desc: 'Старшая из тех, кого аврамисты вычеркнули из своих книг первой. Стоит там, где дорога живых расходится с дорогой мёртвых, и держит факел так, чтобы видно было обе. Её тень-клинок Ун-Скар идёт за ней третьим лицом и делает то, о чём она не говорит вслух.',
     giftName: 'Ключ трёх дорог',
     giftEffect: 'Открывает любую печать секты и показывает на карте ближайший алтарь возрождения.',

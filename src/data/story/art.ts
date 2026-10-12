@@ -1,6 +1,6 @@
 export const SCENE_ART: Record<string, string> = {
   'p-awaken': 'https://cdn.poehali.dev/projects/c4458224-623b-48e2-87b6-15ecc04308fd/files/8d60c79b-78c4-47e8-80a3-2c5b6ad7cc53.jpg',
-  'p-hekate': 'https://cdn.poehali.dev/projects/c4458224-623b-48e2-87b6-15ecc04308fd/files/4bab6083-843a-42bd-9e8f-3ccecbe6bba4.jpg',
+  'p-hekate': 'https://cdn.poehali.dev/projects/c4458224-623b-48e2-87b6-15ecc04308fd/files/724e002c-c58d-4dfb-9b79-28e3cfd6d93a.jpg',
   'p-sariel': 'https://cdn.poehali.dev/projects/c4458224-623b-48e2-87b6-15ecc04308fd/files/6aaa5f7a-4478-4f0e-9e47-4bea8627c9fd.jpg',
   'c1-chapel': 'https://cdn.poehali.dev/projects/c4458224-623b-48e2-87b6-15ecc04308fd/files/6d4a3544-1511-4247-a99c-d5523d578429.jpg',
   'c1-crossroads': 'https://cdn.poehali.dev/projects/c4458224-623b-48e2-87b6-15ecc04308fd/files/f97038b8-e15c-480e-ade7-337a5b9c702e.jpg',

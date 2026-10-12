@@ -4,7 +4,7 @@ import { crypt, useCrypt, type Line } from '@/components/game/crypt3d/crypt-stor
 import { Joystick } from '@/components/game/crypt3d/Joystick';
 
 const WHO: Record<Line['who'], { name: string; color: string }> = {
-  hecate: { name: 'Геката', color: '#c9a6ff' },
+  hecate: { name: 'Геката', color: '#d4b06a' },
   hero: { name: 'Ты', color: '#9fe0b4' },
   soul: { name: 'Душа', color: '#a8c8ff' },
   sariel: { name: 'Сариэл', color: '#d6deff' },
@@ -34,7 +34,10 @@ const Subtitles = ({ onAdvance }: { onAdvance: () => void }) => {
       className="pointer-events-auto absolute inset-x-0 bottom-[20%] mx-auto w-[min(92%,720px)] animate-fade-in rounded-xl px-4 py-3 text-center"
     >
       {w.name && (
-        <p className="text-[0.66rem] font-bold uppercase tracking-[0.3em]" style={{ color: w.color }}>
+        <p className="flex items-center justify-center gap-2 text-[0.66rem] font-bold uppercase tracking-[0.3em]" style={{ color: w.color }}>
+          {line.who === 'hecate' && (
+            <img src="/gods/hekate-face.webp" alt="" className="h-8 w-8 rounded-full object-cover" style={{ boxShadow: `0 0 0 1.5px ${w.color}, 0 0 14px -2px ${w.color}` }} />
+          )}
           {w.name}
         </p>
       )}

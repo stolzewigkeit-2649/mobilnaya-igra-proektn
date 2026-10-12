@@ -31,7 +31,11 @@ const GodsTab = () => (
                 color: g.glow,
               }}
             >
-              <Icon name={g.icon} size={19} strokeWidth={1.6} />
+              {g.portrait ? (
+                <img src={g.portrait} alt={g.name} className="h-full w-full rounded-xl object-cover" />
+              ) : (
+                <Icon name={g.icon} size={19} strokeWidth={1.6} />
+              )}
             </span>
             <span className="min-w-0 flex-1 text-left">
               <span className="block font-display text-base font-bold leading-tight">{g.name}</span>
@@ -42,6 +46,15 @@ const GodsTab = () => (
           </AccordionTrigger>
 
           <AccordionContent className="space-y-3 px-3.5 pb-4 sm:px-4">
+            {g.full && (
+              <div
+                className="relative -mx-3.5 flex justify-center overflow-hidden sm:-mx-4"
+                style={{ background: `radial-gradient(ellipse at 50% 35%, ${g.glow}30 0%, transparent 65%)` }}
+              >
+                <img src={g.full} alt={g.name} loading="lazy" className="h-[340px] w-auto object-contain drop-shadow-[0_10px_30px_rgba(0,0,0,0.6)] sm:h-[420px]" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-card to-transparent" />
+              </div>
+            )}
             <p className="text-xs leading-relaxed text-foreground/90">{g.desc}</p>
 
             <p className="flex items-start gap-2 text-[0.7rem] leading-relaxed text-muted-foreground">

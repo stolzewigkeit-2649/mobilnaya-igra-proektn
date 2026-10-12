@@ -94,6 +94,7 @@ export function pickFocus(camera: THREE.Camera, s: CryptState): string | null {
 }
 
 const HECATE_LINES: Line[] = [
+  { who: 'note', text: 'Свечи клонятся к ней. Тройная луна над челом, золотой огонь в руке, звон бронзовых ключей на поясе. Три лица: одно смотрит на тебя, два — в темноту по сторонам.' },
   { who: 'hecate', text: 'Та, кто знает, куда уходят мёртвые.' },
   { who: 'hecate', text: 'И та, кто знает, сколько лжи живые способны придумать.' },
 ];
