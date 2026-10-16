@@ -74,7 +74,7 @@ const LedgerView = () => {
           })}
         </ol>
         <div className="my-4 h-px bg-[#8a6f4e]/50" />
-        <p className="text-right text-xs italic text-[#6b5236]">Подпись неразборчива. Печать — золотой крест.</p>
+        <p className="text-right text-xs italic text-[#6b5236]">Подпись неразборчива. Печать — золотой круг со шпилем.</p>
         <p className="mt-4 text-center text-[0.65rem] uppercase tracking-[0.2em] text-[#6b5236]/80">клик / E — закрыть</p>
       </div>
     </div>

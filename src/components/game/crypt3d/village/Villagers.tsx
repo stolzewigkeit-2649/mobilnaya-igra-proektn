@@ -6,6 +6,7 @@ import Figure from '@/components/game/crypt3d/grave/Figure';
 import { crypt } from '@/components/game/crypt3d/crypt-store';
 import { usePbr } from '@/components/game/crypt3d/materials';
 import { glowTexture } from '@/components/game/crypt3d/glow';
+import SectSign from '@/components/game/crypt3d/SectSign';
 import { BODIES, CART, CART_TRACK, PREACHER, SARIEL_POST, VILLAGER, WIDOWER } from '@/components/game/crypt3d/village/village-layout';
 
 const skin = (c: string) => new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.6, sheen: 0.4, sheenColor: new THREE.Color('#ffd9d0') });
@@ -38,14 +39,7 @@ const Preacher = () => {
     <LookAt at={new THREE.Vector3(PREACHER.x, 0.5, PREACHER.z)}>
       <group position={[0, 0.5, 0]}>
         <Figure {...m} coat armL={[-0.5, 0, 0.3]} armR={[-1.2, 0, -0.2]} head={[0.05, 0, 0]} limbRef={(k, o) => { if (k === 'armR') arm.current = o; }} />
-        <mesh position={[0, 1.32, 0.13]}>
-          <boxGeometry args={[0.04, 0.22, 0.02]} />
-          <meshStandardMaterial color="#e8c46a" metalness={0.9} roughness={0.25} emissive="#7a5a20" />
-        </mesh>
-        <mesh position={[0, 1.36, 0.13]}>
-          <boxGeometry args={[0.13, 0.035, 0.02]} />
-          <meshStandardMaterial color="#e8c46a" metalness={0.9} roughness={0.25} emissive="#7a5a20" />
-        </mesh>
+        <SectSign size={0.28} position={[0, 1.3, 0.14]} />
         <sprite position={[0, 1.2, -0.3]} scale={[1.8, 2.6, 1]}>
           <spriteMaterial map={halo} color="#ffe8b0" transparent opacity={0.22} depthWrite={false} blending={THREE.AdditiveBlending} />
         </sprite>

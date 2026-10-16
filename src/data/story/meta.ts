@@ -33,7 +33,7 @@ export const EVIDENCE_META: Record<EvidenceId, { label: string; short: string; i
     icon: 'Waves',
   },
   'son-memory': {
-    label: 'Память «Сына Бога»',
+    label: 'Память «Сына Единого»',
     short: 'Существо создал Лжебог. Священное тело — паразит.',
     icon: 'Brain',
   },

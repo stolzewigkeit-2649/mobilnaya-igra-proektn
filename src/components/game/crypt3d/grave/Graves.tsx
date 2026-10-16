@@ -7,15 +7,18 @@ import { GRAVES, TREES, AREA, type Grave } from '@/components/game/crypt3d/grave
 
 const Marker = ({ g, stone, wood }: { g: Grave; stone: THREE.Material; wood: THREE.Material }) => (
   <group position={[g.x, 0, g.z]} rotation={[g.tilt * 0.4, g.rot, g.tilt]}>
-    {g.kind === 'cross' && (
-      <>
+    {g.kind === 'post' && (
+      <group>
         <mesh material={wood} position={[0, g.h / 2, 0]} castShadow>
-          <boxGeometry args={[0.09, g.h, 0.07]} />
+          <boxGeometry args={[0.16, g.h, 0.14]} />
         </mesh>
-        <mesh material={wood} position={[0, g.h * 0.72, 0]} castShadow>
-          <boxGeometry args={[0.46, 0.08, 0.07]} />
+        <mesh material={wood} position={[0, g.h + 0.06, 0]} rotation={[0, 0, Math.PI / 4]} castShadow>
+          <boxGeometry args={[0.24, 0.24, 0.26]} />
         </mesh>
-      </>
+        <mesh material={wood} position={[0, g.h * 0.62, 0.075]}>
+          <torusGeometry args={[0.045, 0.012, 6, 16]} />
+        </mesh>
+      </group>
     )}
     {g.kind === 'stone' && (
       <group>
@@ -27,16 +30,14 @@ const Marker = ({ g, stone, wood }: { g: Grave; stone: THREE.Material; wood: THR
         </mesh>
       </group>
     )}
-    {g.kind === 'celtic' && (
+    {g.kind === 'menhir' && (
       <group>
-        <mesh material={stone} position={[0, g.h * 0.55, 0]} castShadow>
-          <boxGeometry args={[0.13, g.h * 1.1, 0.12]} />
+        <mesh material={stone} position={[0, g.h * 0.5, 0]} scale={[0.32, g.h * 0.55, 0.22]} rotation={[0, 0.3, 0.06]} castShadow receiveShadow>
+          <dodecahedronGeometry args={[1, 0]} />
         </mesh>
-        <mesh material={stone} position={[0, g.h * 0.85, 0]} castShadow>
-          <boxGeometry args={[0.55, 0.12, 0.12]} />
-        </mesh>
-        <mesh material={stone} position={[0, g.h * 0.85, 0]} castShadow>
-          <torusGeometry args={[0.17, 0.03, 8, 24]} />
+        <mesh position={[0, g.h * 0.62, 0.2]} rotation={[0, 0, 0.5]}>
+          <torusGeometry args={[0.08, 0.012, 6, 20, Math.PI * 1.1]} />
+          <meshStandardMaterial color="#9fb2d8" emissive="#5a6e98" emissiveIntensity={0.35} roughness={0.6} />
         </mesh>
       </group>
     )}

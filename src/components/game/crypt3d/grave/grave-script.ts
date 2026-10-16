@@ -28,7 +28,7 @@ export const graveResult = () => result;
 
 export function graveReset() {
   result = { flags: [], sanity: 0, cloth: false };
-  crypt.set({ objective: 'Найди того, кто лежит между крестами' });
+  crypt.set({ objective: 'Найди того, кто лежит между надгробиями' });
 }
 
 const L = (who: Line['who'], text: string): Line => ({ who, text });
@@ -40,7 +40,7 @@ function soulScene() {
   crypt.set({ stage: 'soul', grey: true, objective: '' });
   crypt.say(
     [
-      L('note', 'Звук уходит. Капли с крестов повисают в воздухе. Цвета выцветают в серое.'),
+      L('note', 'Звук уходит. Капли с надгробных столбов повисают в воздухе. Цвета выцветают в серое.'),
       L('soul', 'Я… не должен был здесь оказаться…'),
       L('hero', 'Кто это сделал?'),
       L('soul', 'Люди в белом. Они говорили, что спасают меня.'),
@@ -73,7 +73,7 @@ function soulScene() {
 
 function sarielArrive() {
   cryptAudio.chime(880);
-  crypt.set({ stage: 'sariel', objective: 'Кто-то стоит между крестами' });
+  crypt.set({ stage: 'sariel', objective: 'Кто-то стоит между надгробиями' });
   crypt.say([L('note', 'Звон — тонкий, как от стекла. Ты оборачиваешься.')]);
 }
 
@@ -128,17 +128,17 @@ export function graveInteract(id: string | null) {
     cryptAudio.chime(587);
     crypt.set({
       objective: '',
-      card: { kicker: 'Первая улика', title: 'Белый фрагмент одежды', text: 'Лоскут тонкого белого полотна с золотой нитью по краю. Так шьют рясы аврамистов.', icon: 'Shirt', color: '#d8c89a' },
+      card: { kicker: 'Первая улика', title: 'Белый фрагмент одежды', text: 'Лоскут тонкого белого полотна с золотой нитью по краю. Так шьют рясы аврамистов — тех, кто приходит с «милосердием» и уносит людей.', icon: 'Shirt', color: '#d8c89a' },
     });
     window.setTimeout(sarielArrive, 3200);
   }
-  if (id === 'grave') crypt.say([L('note', '«Здесь лежит раб божий. Имя знает Бог». Имени нет. Камень новый — а могиле лет сто.')]);
+  if (id === 'grave') crypt.say([L('note', 'Старый камень, на нём вырезан серп луны и имя рода. Поверх кто-то грубо выбил круг со шпилем — знак секты. Имя под ним стёсано. Здесь хоронили по старому обычаю, а секта пометила могилу как свою.')]);
   if (id === 'gate') {
     if (st().stage === 'follow') {
       cryptAudio.chime(330);
       crypt.say([L('note', 'Ворота скрипят за спиной. Дорога уходит вниз, к огням деревни. Там звонят — не набат, праздник.')], () => crypt.set({ stage: 'leaving' }));
-    } else if (!has('cloth')) crypt.say([L('note', 'Ворота заперты на цепь. И ты ещё не узнал, кто лежит между крестами.')]);
-    else crypt.say([L('note', 'Кто-то смотрит тебе в спину. Обернись — между крестами.')]);
+    } else if (!has('cloth')) crypt.say([L('note', 'Ворота заперты на цепь. И ты ещё не узнал, кто лежит между надгробиями.')]);
+    else crypt.say([L('note', 'Кто-то смотрит тебе в спину. Обернись — между надгробиями.')]);
     return;
   }
   if (id === 'crypt') crypt.say([L('note', 'Из проёма тянет холодом и синим светом. Там тебе больше нечего делать.')]);

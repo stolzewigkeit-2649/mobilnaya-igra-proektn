@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { usePbr } from '@/components/game/crypt3d/materials';
 import { glowTexture } from '@/components/game/crypt3d/glow';
 import { crypt } from '@/components/game/crypt3d/crypt-store';
+import SectSign from '@/components/game/crypt3d/SectSign';
 import { BARN, CHAPEL, HOUSES, WELL, RIBBON_POLES, type House } from '@/components/game/crypt3d/village/village-layout';
 
 type Mats = { wall: THREE.Material; roof: THREE.Material; beam: THREE.Material; stone: THREE.Material };
@@ -131,16 +132,7 @@ const Chapel = ({ m }: { m: Mats & { white: THREE.Material } }) => {
           <cylinderGeometry args={[0.18, 0.34, 0.5, 18, 1, true]} />
           <meshStandardMaterial color="#c8a050" metalness={0.9} roughness={0.3} side={THREE.DoubleSide} />
         </mesh>
-        <group position={[0, CHAPEL.h + 6.9, 0]}>
-          <mesh>
-            <boxGeometry args={[0.08, 1, 0.08]} />
-            <meshStandardMaterial color="#e8d090" metalness={0.9} roughness={0.25} emissive="#a08040" emissiveIntensity={0.4} />
-          </mesh>
-          <mesh position={[0, 0.18, 0]}>
-            <boxGeometry args={[0.6, 0.08, 0.08]} />
-            <meshStandardMaterial color="#e8d090" metalness={0.9} roughness={0.25} emissive="#a08040" emissiveIntensity={0.4} />
-          </mesh>
-        </group>
+        <SectSign size={1.4} position={[0, CHAPEL.h + 7.0, 0]} />
       </group>
 
       <group position={[CHAPEL.x, 0, front]}>
@@ -157,6 +149,7 @@ const Chapel = ({ m }: { m: Mats & { white: THREE.Material } }) => {
           <circleGeometry args={[0.7, 20, 0, Math.PI]} />
           <meshStandardMaterial color="#2a1c12" />
         </mesh>
+        <SectSign size={0.9} position={[0, 2.85, 0.1]} />
         <sprite position={[0, 1.6, 0.4]} scale={[3, 3, 1]}>
           <spriteMaterial map={halo} color="#ffcf80" transparent opacity={0.3} depthWrite={false} blending={THREE.AdditiveBlending} />
         </sprite>

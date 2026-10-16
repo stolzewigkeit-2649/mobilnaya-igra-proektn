@@ -15,7 +15,7 @@ function rand(seed: number) {
   return x - Math.floor(x);
 }
 
-export type Grave = { x: number; z: number; rot: number; tilt: number; kind: 'cross' | 'stone' | 'celtic'; h: number };
+export type Grave = { x: number; z: number; rot: number; tilt: number; kind: 'post' | 'stone' | 'menhir'; h: number };
 
 export const GRAVES: Grave[] = (() => {
   const out: Grave[] = [];
@@ -35,7 +35,7 @@ export const GRAVES: Grave[] = (() => {
         z,
         rot: (rand(i + 5) - 0.5) * 0.35,
         tilt: (rand(i + 7) - 0.5) * 0.32,
-        kind: r < 0.55 ? 'cross' : r < 0.85 ? 'stone' : 'celtic',
+        kind: r < 0.45 ? 'post' : r < 0.8 ? 'stone' : 'menhir',
         h: 0.8 + rand(i + 11) * 0.6,
       });
     }

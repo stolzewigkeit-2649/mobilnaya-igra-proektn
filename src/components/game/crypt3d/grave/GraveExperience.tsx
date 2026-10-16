@@ -38,7 +38,7 @@ const GraveExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
   return (
     <Shell3D
       ready={ready}
-      loading="Луна поднимается над крестами…"
+      loading="Луна поднимается над надгробиями…"
       accent="#b9c8ff"
       freeStages={FREE}
       helpText="Список всех клавиш — в правом нижнем углу (F1)"

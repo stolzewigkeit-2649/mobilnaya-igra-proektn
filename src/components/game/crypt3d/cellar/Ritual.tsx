@@ -1,4 +1,5 @@
 import { useMemo, useRef } from 'react';
+import SectSign from '@/components/game/crypt3d/SectSign';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { CIRCLE, ALTAR } from '@/components/game/crypt3d/cellar/cellar-layout';
@@ -128,14 +129,7 @@ const Ritual = () => {
           <boxGeometry args={[1.2, 0.02, 0.4]} />
           <meshStandardMaterial color="#e9e3d2" roughness={0.95} />
         </mesh>
-        <mesh position={[0, ALTAR.h + 0.42, 0.05]} castShadow>
-          <boxGeometry args={[0.035, 0.6, 0.035]} />
-          <meshStandardMaterial color="#c49a52" metalness={0.9} roughness={0.3} />
-        </mesh>
-        <mesh position={[0, ALTAR.h + 0.56, 0.05]} castShadow>
-          <boxGeometry args={[0.3, 0.035, 0.035]} />
-          <meshStandardMaterial color="#c49a52" metalness={0.9} roughness={0.3} />
-        </mesh>
+        <SectSign size={0.85} position={[0, ALTAR.h + 0.42, 0.05]} />
         <mesh position={[0.62, 0.5, -0.31]}>
           <planeGeometry args={[0.04, 0.9]} />
           <meshBasicMaterial color="#000000" />
