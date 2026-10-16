@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { crypt, type Line } from '@/components/game/crypt3d/crypt-store';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
+import { setTimon } from '@/components/game/crypt3d/companion/companion';
 import { BODY, SARIEL_SPOT, CRYPT_DOOR, GRAVES, GATE } from '@/components/game/crypt3d/grave/grave-layout';
 
 export type GraveResult = { flags: string[]; sanity: number; cloth: boolean };
@@ -28,6 +29,7 @@ export const graveResult = () => result;
 
 export function graveReset() {
   result = { flags: [], sanity: 0, cloth: false };
+  setTimon(false);
   crypt.set({ objective: 'Найди того, кто лежит между надгробиями' });
 }
 
@@ -43,31 +45,81 @@ function soulScene() {
       L('note', 'Звук уходит. Капли с надгробных столбов повисают в воздухе. Цвета выцветают в серое.'),
       L('soul', 'Я… не должен был здесь оказаться…'),
       L('hero', 'Кто это сделал?'),
-      L('soul', 'Люди в белом. Они говорили, что спасают меня.'),
-      L('soul', 'Потом… они сказали, что мой страх — это доказательство веры.'),
+      L('soul', 'Люди в белом. Пришли в деревню с «милосердием». Сказали, что спасут меня от лихорадки.'),
+      L('soul', 'Отвели в подвал под часовней. Там клетки. И другие — из Овражья. Мы слышали, как они поют, когда режут.'),
+      L('soul', 'Потом сказали, что мой страх — доказательство веры. И забрали кровь. Три сосуда.'),
+      L('soul', 'Я вырвался. Добежал досюда. Дальше не помню.'),
       L('note', 'Он начинает таять с краёв, как иней на стекле.'),
-      L('soul', 'Они забрали мою кровь.'),
     ],
     () =>
       crypt.ask(
         [
-          { id: 'ask', label: 'Удержать его ещё на миг: «Как тебя зовут?»', hint: 'Дорого для рассудка. Но у него должно быть имя.' },
-          { id: 'let', label: 'Отпустить его' },
+          { id: 'name', label: '«Как тебя зовут?»' },
+          { id: 'let', label: 'Отпустить его', hint: 'Он уйдёт навсегда. Правду придётся искать без него.' },
         ],
         (id) => {
-          const end = () => {
-            cryptAudio.whisper(false);
-            crypt.set({ stage: 'walk', grey: false, objective: 'Подними то, что он держал в руке' });
-            mark('cloth-seen');
-            crypt.say([L('note', 'Мир возвращает цвет. В разжатых пальцах мертвеца белеет клочок ткани.')]);
-          };
-          if (id === 'ask') {
-            result.sanity -= 8;
-            result.flags.push('named-first');
-            crypt.say([L('soul', '…Тимон. Скажи матери…'), L('note', 'И его больше нет. Но имя остаётся с тобой.')], end);
-          } else end();
+          if (id === 'let') return letGo();
+          result.flags.push('named-first');
+          crypt.say(
+            [
+              L('soul', 'Тимон. Сын кожевника из Овражья. Мать… она до сих пор думает, что я ушёл «к Единому».'),
+              L('soul', 'Я не хочу уходить так. Не зная, зачем им была моя кровь.'),
+            ],
+            () =>
+              crypt.ask(
+                [
+                  { id: 'raise', label: 'Вернуть душу в тело: «Встань. Найдём правду вместе»', hint: 'Некромантия. Тяжело для рассудка (−10). Тимон пойдёт с тобой.' },
+                  { id: 'let', label: '«Иди с миром. Я расскажу твоей матери»' },
+                ],
+                (c) => (c === 'raise' ? raiseTimon() : letGo()),
+              ),
+          );
         },
       ),
+  );
+}
+
+function letGo() {
+  crypt.say([L('soul', 'Скажи матери…'), L('note', 'И его больше нет.')], () => {
+    cryptAudio.whisper(false);
+    crypt.set({ stage: 'walk', grey: false, objective: 'Подними то, что он держал в руке' });
+    mark('cloth-seen');
+    crypt.say([L('note', 'Мир возвращает цвет. В разжатых пальцах мертвеца белеет клочок ткани.')]);
+  });
+}
+
+function raiseTimon() {
+  result.sanity -= 10;
+  result.flags.push('timon-raised');
+  mark('timon');
+  cryptAudio.whisper(false);
+  cryptAudio.chime(247);
+  crypt.set({ grey: false });
+  setTimon(true, new THREE.Vector3(BODY.x, 0, BODY.z), true);
+  crypt.say(
+    [
+      L('note', 'Ты не отпускаешь душу — ты тянешь её обратно. Вниз, в остывшее тело. Пальцы сводит холодом.'),
+      L('note', 'Мертвец вздрагивает. Грудь поднимается — не дыханием, привычкой. В глазах загорается бледно-зелёный огонь.'),
+      L('note', 'Тимон садится. Смотрит на свои руки. Потом — на тебя.'),
+      L('soul', 'Я… здесь. Холодно, но не больно. Я помню всё — и подвал, и лица.'),
+      L('soul', 'Ты меня держишь. Я чувствую нить. Пока она есть — я с тобой.'),
+      L('note', 'Он разжимает кулак. На ладони — белый лоскут с золотой нитью.'),
+      L('soul', 'Это я сорвал с одного из них. Возьми. Пусть будет первым.'),
+    ],
+    () => {
+      mark('cloth');
+      result.cloth = true;
+      cryptAudio.chime(587);
+      crypt.set({
+        stage: 'walk',
+        objective: '',
+        card: { kicker: 'Новый спутник', title: 'Тимон, поднятый', text: 'Жертва секты · помнит подвал и лица · чует следы мёртвых · идёт за тобой, пока держится нить', icon: 'Skull', color: '#7dffb0' },
+      });
+      window.setTimeout(() => {
+        crypt.set({ card: { kicker: 'Первая улика', title: 'Белый фрагмент одежды', text: 'Лоскут тонкого белого полотна с золотой нитью. Тимон сорвал его с рясы сектанта.', icon: 'Shirt', color: '#d8c89a' } });
+        window.setTimeout(sarielArrive, 3200);
+      }, 4200);
+    },
   );
 }
 
@@ -83,6 +135,7 @@ function sarielTalk() {
     [
       L('note', 'Высокий, бледный, серебряные волосы до плеч. На поясе — колокол, будто отлитый из лунного света, и короткий серп.'),
       L('sariel', 'Ты слишком долго разговариваешь с мёртвыми.'),
+      ...(has('timon') ? [L('note', 'Сариэл смотрит на Тимона. Долго. Тимон не отводит зелёных глаз.'), L('sariel', 'И не только разговариваешь, вижу. Ладно. Свидетель, который помнит подвал, нам пригодится.')] : []),
       L('hero', 'А ты слишком много знаешь.'),
       L('sariel', 'Это профессиональное заболевание.'),
       L('note', 'Он садится на могильную плиту и рассказывает спокойно, как о погоде: аврамисты собирают осколки Абсолюта. У них уже сотни. И ради каждого кто-то умирает.'),

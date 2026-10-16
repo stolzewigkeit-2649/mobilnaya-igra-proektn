@@ -8,13 +8,11 @@ import { crypt } from '@/components/game/crypt3d/crypt-store';
 import Buildings from '@/components/game/crypt3d/village/Buildings';
 import Villagers from '@/components/game/crypt3d/village/Villagers';
 import VillagePlayer from '@/components/game/crypt3d/village/VillagePlayer';
+import Timon from '@/components/game/crypt3d/companion/Timon';
 import FirstPersonHands from '@/components/game/crypt3d/hands/FirstPersonHands';
-import NecroSystem from '@/components/game/crypt3d/necro/NecroSystem';
-import { VILLAGE_CORPSES } from '@/components/game/crypt3d/necro/corpses';
-import { AREA } from '@/components/game/crypt3d/village/village-layout';
+import { AREA, collide } from '@/components/game/crypt3d/village/village-layout';
 
 const MOON = new THREE.Vector3(0.5, 0.55, -1).normalize();
-const necroOn = () => crypt.get().stage === 'walk';
 
 const Sky = () => {
   const glow = useMemo(() => glowTexture('rgba(255,210,170,1)'), []);
@@ -166,7 +164,7 @@ const VillageScene = ({ onReady }: { onReady: () => void }) => {
       <Villagers />
       {!low && <Smoke />}
       <VillagePlayer />
-      <NecroSystem corpses={VILLAGE_CORPSES} enabled={necroOn} />
+      <Timon collide={collide} />
       <FirstPersonHands sleeve="#1b1714" />
     </>
   );

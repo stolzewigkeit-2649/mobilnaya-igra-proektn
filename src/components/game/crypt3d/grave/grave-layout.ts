@@ -1,3 +1,4 @@
+import { companion } from '@/components/game/crypt3d/companion/companion';
 import * as THREE from 'three';
 
 export const AREA = 15;
@@ -62,7 +63,7 @@ export function collide(p: THREE.Vector3) {
     push(p, g.x, g.z, r + PAD);
   }
   for (const t of TREES) push(p, t.x, t.z, 0.4 * t.s + PAD);
-  push(p, BODY.x, BODY.z, 0.55);
+  if (!companion.timon) push(p, BODY.x, BODY.z, 0.55);
   push(p, SARIEL_SEAT.x, SARIEL_SEAT.z, 0.75);
   if (Math.abs(p.x) < 1.1) p.z = Math.max(p.z, -AREA + 0.7);
 }

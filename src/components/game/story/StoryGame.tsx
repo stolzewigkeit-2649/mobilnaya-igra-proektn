@@ -152,6 +152,7 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
             />
           ) : in3d === 'village' ? (
             <VillageExperience
+              withTimon={story.state.flags.includes('timon-raised')}
               volume={(settings.master / 100) * 0.9}
               onExit={() => setIn3d(null)}
               onComplete={(r) => {
@@ -173,6 +174,7 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
             />
           ) : in3d === 'cellar' ? (
             <CellarExperience
+              withTimon={story.state.flags.includes('timon-raised')}
               volume={(settings.master / 100) * 0.9}
               onExit={() => setIn3d(null)}
               onComplete={(r) => {

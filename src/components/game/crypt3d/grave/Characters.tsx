@@ -3,7 +3,9 @@ import { useFrame } from '@react-three/fiber';
 import { Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import Figure from '@/components/game/crypt3d/grave/Figure';
-import { BODY, SARIEL_SPOT, GATE } from '@/components/game/crypt3d/grave/grave-layout';
+import { BODY, SARIEL_SPOT, GATE, collide } from '@/components/game/crypt3d/grave/grave-layout';
+import Timon from '@/components/game/crypt3d/companion/Timon';
+import { companion } from '@/components/game/crypt3d/companion/companion';
 import { crypt } from '@/components/game/crypt3d/crypt-store';
 import { glowTexture } from '@/components/game/crypt3d/glow';
 import { usePbr } from '@/components/game/crypt3d/materials';
@@ -22,11 +24,13 @@ const Body = () => {
     [],
   );
   const cloth = useRef<THREE.Mesh>(null);
+  const whole = useRef<THREE.Group>(null);
   useFrame(() => {
+    if (whole.current) whole.current.visible = !companion.timon;
     if (cloth.current) cloth.current.visible = crypt.get().inspected.includes('cloth-seen') && !crypt.get().inspected.includes('cloth');
   });
   return (
-    <group position={[BODY.x, 0.11, BODY.z]} rotation={[0, 0.4, 0]}>
+    <group ref={whole} position={[BODY.x, 0.11, BODY.z]} rotation={[0, 0.4, 0]}>
       <group rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0.85]}>
         <Figure {...m} armL={[0.1, 0, 0.9]} armR={[-0.2, 0, -1.3]} legL={[0, 0, 0.08]} legR={[0, 0, -0.14]} head={[0.2, 0, 0.35]} />
       </group>
@@ -158,6 +162,7 @@ const Characters = () => (
     <Body />
     <Soul />
     <Sariel />
+    <Timon collide={collide} />
   </>
 );
 

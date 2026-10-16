@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { crypt, type Line } from '@/components/game/crypt3d/crypt-store';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
+import { companion } from '@/components/game/crypt3d/companion/companion';
 import { BARN, BODIES, CART, CHAPEL_DOOR, PREACHER, SARIEL_POST, VILLAGER, WELL, WIDOWER } from '@/components/game/crypt3d/village/village-layout';
 
 export type VillageResult = { flags: string[]; sanity: number; health: number; evidence: string[]; rep: Record<string, number>; done: boolean };
@@ -15,7 +16,10 @@ const walk = () => st().stage === 'walk';
 
 const CLUES = ['clue-lime', 'clue-cart', 'clue-chapel'];
 
+const tim = () => companion.timon;
+
 export const VSPOTS: VSpot[] = [
+  { id: 'timon', label: 'Спросить Тимона', at: companion.head, radius: 0.55, when: () => walk() && tim() },
   { id: 'villager', label: 'Заговорить с женщиной', at: new THREE.Vector3(VILLAGER.x, 1.5, VILLAGER.z), radius: 0.6, when: () => walk() && !has('villager') },
   { id: 'preacher', label: 'Подойти к проповеднику', at: new THREE.Vector3(PREACHER.x, 2.0, PREACHER.z), radius: 0.6, when: () => walk() },
   { id: 'widower', label: 'Поговорить со стариком', at: new THREE.Vector3(WIDOWER.x, 1.5, WIDOWER.z), radius: 0.6, when: () => walk() && !has('widower') },
@@ -65,6 +69,12 @@ export function villageIntro() {
       L('note', 'За неделю здесь умерли пятеро. Секта велела называть это «благодатью» — и деревня повторяет, потому что боится.'),
       L('preacher', 'Входите, путники! Сегодня у нас праздник: пятеро наших ушли к Единому за всех нас.'),
       L('sariel', '(тихо) Голос у него ласковый. А глаза — нет. Тела в амбаре, справа. Я буду там.'),
+      ...(tim()
+        ? [
+            L('note', 'Тимон натягивает капюшон ниже. Зелёный огонь в глазах почти гаснет — он прячет его.'),
+            L('timon', '(шёпотом) Это он. Это он пел в подвале. Не дай ему меня увидеть.'),
+          ]
+        : []),
     ],
     () => {
       crypt.set({ stage: 'walk' });
@@ -101,6 +111,7 @@ function preacher() {
       L('hero', 'Вроде того. Отчего умерли эти пятеро?'),
       L('preacher', 'Они отдали себя добровольно. Страх — это лишь доказательство веры, сын мой. Они его преодолели.'),
       L('note', 'Он улыбается. На пальце — перстень со знаком секты: золотой круг, внутри шпиль. Он постукивает им по перилам, когда молчит.'),
+      ...(tim() ? [L('note', 'За твоей спиной Тимон замирает. Ты чувствуешь, как натягивается нить между вами — от его ненависти.')] : []),
       L('preacher', 'Вечером проповедь. Приходите. Узнаете больше.'),
     ]);
     flag('met-preacher');
@@ -139,6 +150,36 @@ function preacher() {
 export function villageInteract(id: string | null) {
   const sp = VSPOTS.find((s) => s.id === id);
   if (!sp || !sp.when()) return;
+
+  if (id === 'timon') {
+    const n = clues();
+    if (!has('timon-mother') && has('villager')) {
+      mark('timon-mother');
+      result.sanity += 4;
+      crypt.say([
+        L('timon', 'Эта женщина… с белой лентой. Это моя мать.'),
+        L('note', 'Он долго смотрит на неё из-под капюшона. Не подходит.'),
+        L('timon', 'Она говорит их словами. Значит, ей тоже страшно. Когда всё кончится — я скажу ей сам.'),
+      ]);
+      return;
+    }
+    if (!result.flags.includes('clue-cart')) {
+      crypt.say(
+        [
+          L('timon', 'Меня везли ночью. На телеге, под полотном. Я помню, как трясло — задами, через огороды. От амбара.'),
+          L('timon', 'Я чую, где проехали мёртвые. Иди за мной — к амбару, налево от ворот.'),
+        ],
+        () => crypt.set({ objective: 'Тимон помнит телегу: осмотри колею у ворот амбара' }),
+      );
+      return;
+    }
+    crypt.say(
+      n >= 3
+        ? [L('timon', 'Подвал под часовней. Третья скамья. Я помню запах извести — я бы узнал его и мёртвым. Я и есть мёртвый.')]
+        : [L('timon', 'Под ногтями у Марфы… посмотри. Мы все царапали стены там, внизу. Они белые.')],
+    );
+    return;
+  }
 
   if (id === 'villager') {
     mark('villager');
@@ -238,7 +279,11 @@ export function villageInteract(id: string | null) {
     mark('tracks');
     flag('clue-cart');
     crypt.say(
-      [L('note', 'От амбара — свежая колея. Тележная, ночная. Возили тяжёлое. Не по дороге, а задами, через огороды.'), L('note', 'Колея светится в твоих глазах бледно-зелёным: мёртвые оставляют след. Она ведёт к часовне.')],
+      [
+        L('note', 'От амбара — свежая колея. Тележная, ночная. Возили тяжёлое. Не по дороге, а задами, через огороды.'),
+        L('note', 'Колея светится в твоих глазах бледно-зелёным: мёртвые оставляют след. Она ведёт к часовне.'),
+        ...(tim() ? [L('timon', 'Да. Вот так меня и везли.')] : []),
+      ],
       () => {
         card('Ночная колея', 'Телега ходила от амбара к часовне — задворками, по ночам.', 'Footprints');
         updateObjective();

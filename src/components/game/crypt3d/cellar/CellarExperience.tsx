@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
 import Hud from '@/components/game/crypt3d/Hud';
-import NecroHud from '@/components/game/crypt3d/necro/NecroHud';
-import { withNecro } from '@/components/game/crypt3d/necro/necro-result';
 import Shell3D, { isTouch } from '@/components/game/crypt3d/Shell3D';
 import CellarScene from '@/components/game/crypt3d/cellar/CellarScene';
 import LedgerView from '@/components/game/crypt3d/cellar/LedgerView';
 import { crypt, useCrypt } from '@/components/game/crypt3d/crypt-store';
 import { CSPOTS, cellarInteract, cellarReset, cellarResult, setLedger, ledgerUi, type CellarResult } from '@/components/game/crypt3d/cellar/cellar-script';
+import * as THREE from 'three';
+import { setTimon } from '@/components/game/crypt3d/companion/companion';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
 import { cycleHands } from '@/components/game/crypt3d/hands/hand-state';
 
-type Props = { onComplete: (r: CellarResult | null) => void; onExit: () => void; volume?: number };
+type Props = { withTimon?: boolean; onComplete: (r: CellarResult | null) => void; onExit: () => void; volume?: number };
 
 const FREE = ['walk'];
 
-const CellarExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
+const CellarExperience = ({ onComplete, onExit, volume = 0.8, withTimon = false }: Props) => {
   const stage = useCrypt((s) => s.stage);
   const [ready, setReady] = useState(false);
   const [fade, setFade] = useState(false);
@@ -22,21 +22,23 @@ const CellarExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
 
   useEffect(() => {
     crypt.reset('walk');
+    setTimon(withTimon, new THREE.Vector3(0.6, 0, 3.6));
     cellarReset();
     setLedger(false);
     cryptAudio.setVolume(volume);
     return () => {
       setLedger(false);
+      setTimon(false);
       cryptAudio.close();
     };
-  }, [volume]);
+  }, [volume, withTimon]);
 
   useEffect(() => {
     if (stage !== 'leaving') return;
     document.exitPointerLock?.();
     cryptAudio.chime(262);
     setFade(true);
-    const t = window.setTimeout(() => onComplete(withNecro(cellarResult())), 1800);
+    const t = window.setTimeout(() => onComplete(cellarResult()), 1800);
     return () => window.clearTimeout(t);
   }, [stage, onComplete]);
 
@@ -61,7 +63,6 @@ const CellarExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
       scene={<CellarScene onReady={onReady} />}
       overlay={
         <>
-          {stage === 'walk' && <NecroHud touch={isTouch()} />}
           <Hud touch={isTouch()} free={FREE.includes(stage)} spots={CSPOTS} onInteract={cellarInteract} onAdvance={() => crypt.advance()} onHands={cycleHands} />
           <LedgerView />
         </>

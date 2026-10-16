@@ -8,7 +8,6 @@ import { LookPad } from '@/components/game/crypt3d/Joystick';
 import { look } from '@/components/game/crypt3d/hands/hand-state';
 import KeyTurn from '@/components/game/crypt3d/KeyTurn';
 import KeysPanel from '@/components/game/crypt3d/KeysPanel';
-import { necro } from '@/components/game/crypt3d/necro/necro';
 
 type Props = {
   scene: ReactNode;
@@ -58,6 +57,9 @@ const Shell3D = (p: Props) => {
   const paused = useCrypt((s) => s.paused);
   const choosing = useCrypt((s) => s.choices.length > 0);
   const [locked, setLocked] = useState(false);
+  const [dragMode, setDragMode] = useState(false);
+  const dragOn = useRef(false);
+  const drag = useRef({ active: false, x: 0, y: 0, moved: 0 });
   const wrap = useRef<HTMLDivElement>(null);
   const lockedAt = useRef(0);
   const handlers = useRef(p);
@@ -73,12 +75,6 @@ const Shell3D = (p: Props) => {
         if (c) crypt.choose(c.id);
         return;
       }
-      if (!e.repeat && e.code === 'KeyR') necro.start('soul');
-      if (!e.repeat && e.code === 'KeyF') {
-        const raised = necro.raisedId();
-        if (raised && raised === necro.get().target) necro.release(raised);
-        else necro.start('raise');
-      }
       if (e.code === 'KeyE' && !s.lines.length) handlers.current.onInteract();
       if (e.code === 'KeyH') handlers.current.onHands?.();
       if (e.code === 'Enter' || e.code === 'Space') handlers.current.onAdvance();
@@ -92,6 +88,35 @@ const Shell3D = (p: Props) => {
       input.look.dy += e.movementY;
     };
     document.addEventListener('mousemove', move);
+    const dmove = (e: PointerEvent) => {
+      const d = drag.current;
+      if (!d.active || document.pointerLockElement) return;
+      const dx = e.clientX - d.x;
+      const dy = e.clientY - d.y;
+      d.x = e.clientX;
+      d.y = e.clientY;
+      d.moved += Math.abs(dx) + Math.abs(dy);
+      look.lastInput = performance.now();
+      input.look.dx += dx * 1.3;
+      input.look.dy += dy * 1.3;
+    };
+    const dup = () => {
+      const d = drag.current;
+      if (!d.active) return;
+      d.active = false;
+      if (dragOn.current && d.moved < 6) {
+        const s = crypt.get();
+        if (s.lines.length) handlers.current.onAdvance();
+        else if (!s.choices.length) handlers.current.onInteract();
+      }
+    };
+    const lockError = () => {
+      dragOn.current = true;
+      setDragMode(true);
+    };
+    window.addEventListener('pointermove', dmove);
+    window.addEventListener('pointerup', dup);
+    document.addEventListener('pointerlockerror', lockError);
     const lockChange = () => {
       setLocked(!!document.pointerLockElement);
       if (document.pointerLockElement) lockedAt.current = performance.now();
@@ -107,22 +132,47 @@ const Shell3D = (p: Props) => {
       window.removeEventListener('keyup', up);
       document.removeEventListener('mousemove', move);
       document.removeEventListener('pointerlockchange', lockChange);
+      window.removeEventListener('pointermove', dmove);
+      window.removeEventListener('pointerup', dup);
+      document.removeEventListener('pointerlockerror', lockError);
       input.keys.clear();
       input.move.x = input.move.y = 0;
     };
   }, []);
 
-  const lock = () => {
+  const enableDrag = () => {
+    dragOn.current = true;
+    setDragMode(true);
+  };
+
+  const tryLock = () => {
+    const canvas = wrap.current?.querySelector('canvas');
+    if (!canvas?.requestPointerLock) return enableDrag();
+    try {
+      const r = canvas.requestPointerLock() as unknown as Promise<void> | undefined;
+      if (r && typeof r.catch === 'function') r.catch(enableDrag);
+    } catch {
+      enableDrag();
+    }
+  };
+
+  const lock = (e?: React.PointerEvent) => {
     cryptAudio.unlock();
     const s = crypt.get();
     if (s.choices.length) return;
+    if (s.paused) {
+      crypt.set({ paused: false });
+      if (!touch && !dragOn.current) tryLock();
+      return;
+    }
     if (document.pointerLockElement) {
       if (s.lines.length) p.onAdvance();
       else p.onInteract();
       return;
     }
-    if (!touch && !s.paused) wrap.current?.querySelector('canvas')?.requestPointerLock?.();
-    if (s.paused) crypt.set({ paused: false });
+    if (touch) return;
+    if (e && e.pointerType === 'mouse') drag.current = { active: true, x: e.clientX, y: e.clientY, moved: 0 };
+    if (!dragOn.current) tryLock();
   };
 
   if (!webgl)
@@ -136,7 +186,7 @@ const Shell3D = (p: Props) => {
     );
 
   return (
-    <div ref={wrap} className="fixed inset-0 z-[60] bg-black" onPointerDown={lock}>
+    <div ref={wrap} className={`fixed inset-0 z-[60] bg-black ${dragMode ? 'cursor-grab active:cursor-grabbing' : ''}`} onPointerDown={lock}>
       <Canvas shadows dpr={[1, 1.75]} camera={{ fov: 68, near: 0.03, far: 80 }} gl={{ antialias: true, powerPreference: 'high-performance' }}>
         <Suspense fallback={null}>{p.scene}</Suspense>
         <KeyTurn />
@@ -171,7 +221,7 @@ const Shell3D = (p: Props) => {
           <div className="w-full max-w-xs space-y-2.5 rounded-xl p-5 text-center panel-surface">
             <p className="font-display text-lg font-extrabold">Пауза</p>
             {!touch && <p className="text-xs text-muted-foreground">{p.helpText}</p>}
-            <button type="button" onClick={lock} className="h-11 w-full rounded-lg font-bold text-primary-foreground btn-play-surface">
+            <button type="button" onClick={() => lock()} className="h-11 w-full rounded-lg font-bold text-primary-foreground btn-play-surface">
               Продолжить
             </button>
             <button type="button" onClick={p.onSkip} className="h-11 w-full rounded-lg text-sm font-semibold tile-surface">
@@ -186,7 +236,7 @@ const Shell3D = (p: Props) => {
 
       {!paused && !touch && !locked && !choosing && p.ready && stage !== 'leaving' && (
         <p className="pointer-events-none absolute inset-x-0 bottom-28 z-10 text-center text-xs text-white/50">
-          Кликни, чтобы осматриваться мышью
+          {dragMode ? 'Зажми кнопку мыши и веди, чтобы осматриваться · стрелки ← → тоже поворачивают' : 'Кликни, чтобы осматриваться мышью'}
         </p>
       )}
 

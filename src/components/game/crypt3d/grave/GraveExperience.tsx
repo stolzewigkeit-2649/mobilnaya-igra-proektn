@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import Hud from '@/components/game/crypt3d/Hud';
-import NecroHud from '@/components/game/crypt3d/necro/NecroHud';
-import { withNecro } from '@/components/game/crypt3d/necro/necro-result';
 import Shell3D, { isTouch } from '@/components/game/crypt3d/Shell3D';
 import GraveScene from '@/components/game/crypt3d/grave/GraveScene';
 import { crypt, useCrypt } from '@/components/game/crypt3d/crypt-store';
@@ -31,7 +29,7 @@ const GraveExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
     if (stage !== 'leaving') return;
     document.exitPointerLock?.();
     setFade(true);
-    const t = window.setTimeout(() => onComplete(withNecro(graveResult())), 1800);
+    const t = window.setTimeout(() => onComplete(graveResult()), 1800);
     return () => window.clearTimeout(t);
   }, [stage, onComplete]);
 
@@ -55,7 +53,6 @@ const GraveExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
             className="pointer-events-none absolute inset-0 transition-[backdrop-filter] duration-[1500ms]"
             style={{ backdropFilter: grey ? 'grayscale(0.85) contrast(1.1)' : 'grayscale(0)' }}
           />
-          {['walk', 'sariel'].includes(stage) && <NecroHud touch={isTouch()} />}
           <Hud
             touch={isTouch()}
             free={FREE.includes(stage)}

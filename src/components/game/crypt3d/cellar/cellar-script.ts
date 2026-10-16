@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { crypt, type Line } from '@/components/game/crypt3d/crypt-store';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
-import { necro } from '@/components/game/crypt3d/necro/necro';
+import { companion } from '@/components/game/crypt3d/companion/companion';
 import { CAGES, TABLE, CIRCLE, ALTAR, SHELF, STAIRS, HD } from '@/components/game/crypt3d/cellar/cellar-layout';
 
 export type CellarResult = { flags: string[]; sanity: number; rep: number };
@@ -10,7 +10,7 @@ export type LedgerEntry = { name: string; age: string; note: string; status: 'de
 
 export const LEDGER: LedgerEntry[] = [
   { name: 'Агния, дочь мельника', age: '14 лет', note: 'держалась 4 дня. Пела. На пятый — замолчала.', status: 'dead' },
-  { name: 'Тимон, подмастерье', age: '19 лет', note: 'взят у старого кладбища. Кровь — 3 сосуда. Отпущен «к Единому».', status: 'dead' },
+  { name: 'Тимон, подмастерье', age: '19 лет', note: 'Кровь — 3 сосуда. Бежал ночью, нашли у старого кладбища мёртвым. Записать: «отпущен к Единому».', status: 'dead' },
   { name: 'Ерема Кожух', age: '52 года', note: 'на третьем сосуде — бред. Звал жену.', status: 'dead' },
   { name: 'Вдова Ирмина', age: '61 год', note: 'смерть не побеждена.', status: 'dead' },
   { name: 'Лука, пастух', age: '33 года', note: 'жив. Держится. Повторить на новолуние.', status: 'alive' },
@@ -28,6 +28,7 @@ const clueIds = ['cage-1', 'cage-3', 'circle', 'tools', 'ledger', 'shelf', 'alta
 const clues = () => clueIds.filter(has).length;
 
 export const CSPOTS: CSpot[] = [
+  { id: 'timon', label: 'Спросить Тимона', at: companion.head, radius: 0.55, when: () => st().stage === 'walk' && companion.timon },
   { id: 'ledger', label: 'Прочесть списки', at: new THREE.Vector3(TABLE.x - 0.1, TABLE.h, TABLE.z - 0.25), radius: 0.4, when: () => st().stage === 'walk' },
   { id: 'tools', label: 'Осмотреть инструменты', at: new THREE.Vector3(TABLE.x + 0.25, TABLE.h, TABLE.z + 0.45), radius: 0.4, when: () => st().stage === 'walk' },
   { id: 'circle', label: 'Осмотреть ритуальный круг', at: new THREE.Vector3(CIRCLE.x, 0.05, CIRCLE.z), radius: 0.9, when: () => st().stage === 'walk' },
@@ -104,6 +105,22 @@ function survivorTalk() {
 export function cellarInteract(id: string | null) {
   const sp = CSPOTS.find((s) => s.id === id);
   if (!sp || !sp.when()) return;
+  if (id === 'timon') {
+    if (!has('timon-cage')) {
+      mark('timon-cage');
+      result.flags.push('timon-remembers');
+      result.sanity -= 2;
+      crypt.say([
+        L('timon', 'Третья клетка. Моя. Солома ещё примята — я лежал на левом боку, чтобы не видеть стол.'),
+        L('timon', 'Главный приходил не по лестнице. Он выходил из-за алтаря. Я слышал, как скрипит камень.'),
+        L('note', 'Нить между вами дрожит. Ему больно здесь — даже мёртвому.'),
+      ]);
+      if (!result.flags.includes('altar-hint')) result.flags.push('altar-hint');
+      return;
+    }
+    crypt.say([L('timon', 'Вытащи того, кто ещё живой. Я не успел. Пусть хоть кто-то успеет.')]);
+    return;
+  }
   const first = !has(id!);
   if (clueIds.includes(id!)) mark(id!);
 
@@ -127,7 +144,11 @@ export function cellarInteract(id: string | null) {
       L('hero', 'Они не лечили. Они держали.'),
     ]);
   if (id === 'cage-1') crypt.say([L('note', 'Девочка. Совсем маленькая. Руки связаны над головой. Холодная.'), L('note', 'На запястье — тот же аккуратный надрез, что у Тимона.')]);
-  if (id === 'cage-3') crypt.say([L('note', 'Пусто. Солома примята. На полу — обрывок бумаги: «переведён наверх».')]);
+  if (id === 'cage-3')
+    crypt.say([
+      L('note', 'Пусто. Солома примята. На полу — обрывок бумаги: «переведён наверх».'),
+      ...(companion.timon ? [L('timon', 'Здесь сидел я. А «наверх» — это не наверх. Это за алтарь.')] : []),
+    ]);
   if (id === 'shelf')
     crypt.say([
       L('note', 'Склянки с тёмным осадком. На каждой — бирка с именем и числом. «Агния — 3». «Тимон — 3». «Ерема — 4».'),
@@ -135,7 +156,7 @@ export function cellarInteract(id: string | null) {
     ]);
   if (id === 'altar') {
     crypt.say(
-      has('altar-hint') || result.flags.includes('altar-hint') || necro.get().flags.includes('altar-hint')
+      has('altar-hint') || result.flags.includes('altar-hint')
         ? [L('note', 'Ты проводишь рукой по боковой стенке. Шов. Тонкий, как волос. Из-за алтаря тянет сквозняком.')]
         : [L('note', 'Белое полотно, золотой круг со шпилем — знак секты. Самое чистое место в этом подвале, вычищенное до блеска среди крови. От этого только страшнее.')],
     );
