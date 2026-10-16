@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { crypt, type Line } from '@/components/game/crypt3d/crypt-store';
 import { cryptAudio } from '@/components/game/crypt3d/use-crypt-audio';
-import { BODY, SARIEL_SPOT, CRYPT_DOOR, GRAVES } from '@/components/game/crypt3d/grave/grave-layout';
+import { BODY, SARIEL_SPOT, CRYPT_DOOR, GRAVES, GATE } from '@/components/game/crypt3d/grave/grave-layout';
 
 export type GraveResult = { flags: string[]; sanity: number; cloth: boolean };
 
@@ -19,6 +19,7 @@ export const GSPOTS: GSpot[] = [
   { id: 'cloth', label: 'Поднять лоскут', at: new THREE.Vector3(BODY.x + 0.5, 0.05, BODY.z + 0.2), radius: 0.7, when: () => has('cloth-seen') && !has('cloth') },
   { id: 'sariel', label: 'Говорить с Сариэлом', at: new THREE.Vector3(SARIEL_SPOT.x, 1.6, SARIEL_SPOT.z), radius: 0.6, when: () => st().stage === 'sariel' },
   { id: 'grave', label: 'Прочесть надпись', at: new THREE.Vector3(nearGrave.x, 0.6, nearGrave.z), radius: 0.6, when: () => st().stage === 'walk' },
+  { id: 'gate', label: 'Выйти к деревне', at: new THREE.Vector3(GATE.x, 1.1, GATE.z + 0.4), radius: 1.3, when: () => ['walk', 'follow'].includes(st().stage) },
   { id: 'crypt', label: 'Вернуться в склеп', at: new THREE.Vector3(CRYPT_DOOR.x, 1, CRYPT_DOOR.z), radius: 1, when: () => st().stage === 'walk' },
 ];
 
@@ -100,7 +101,7 @@ function sarielTalk() {
             card: { kicker: 'Новый спутник', title: 'Сариэл Лунный', text: 'Лунная некромантия · Управление духами · Сны мёртвых · Лунный колокол', icon: 'MoonStar', color: '#b9c8ff' },
           });
           const tail = id === 'doubt' ? [L('sariel', 'Разумно. Я бы тоже себе не доверял.')] : [L('sariel', 'Тогда не отставай. Деревня за холмом.')];
-          crypt.say(tail, () => window.setTimeout(() => crypt.set({ stage: 'leaving' }), 2500));
+          crypt.say(tail, () => crypt.set({ stage: 'follow', objective: 'Иди за Сариэлом к воротам кладбища' }));
         },
       ),
   );
@@ -132,6 +133,14 @@ export function graveInteract(id: string | null) {
     window.setTimeout(sarielArrive, 3200);
   }
   if (id === 'grave') crypt.say([L('note', '«Здесь лежит раб божий. Имя знает Бог». Имени нет. Камень новый — а могиле лет сто.')]);
+  if (id === 'gate') {
+    if (st().stage === 'follow') {
+      cryptAudio.chime(330);
+      crypt.say([L('note', 'Ворота скрипят за спиной. Дорога уходит вниз, к огням деревни. Там звонят — не набат, праздник.')], () => crypt.set({ stage: 'leaving' }));
+    } else if (!has('cloth')) crypt.say([L('note', 'Ворота заперты на цепь. И ты ещё не узнал, кто лежит между крестами.')]);
+    else crypt.say([L('note', 'Кто-то смотрит тебе в спину. Обернись — между крестами.')]);
+    return;
+  }
   if (id === 'crypt') crypt.say([L('note', 'Из проёма тянет холодом и синим светом. Там тебе больше нечего делать.')]);
   if (id === 'sariel') sarielTalk();
 }

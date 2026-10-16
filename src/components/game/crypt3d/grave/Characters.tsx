@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import Figure from '@/components/game/crypt3d/grave/Figure';
-import { BODY, SARIEL_SPOT } from '@/components/game/crypt3d/grave/grave-layout';
+import { BODY, SARIEL_SPOT, GATE } from '@/components/game/crypt3d/grave/grave-layout';
 import { crypt } from '@/components/game/crypt3d/crypt-store';
 import { glowTexture } from '@/components/game/crypt3d/glow';
 import { usePbr } from '@/components/game/crypt3d/materials';
@@ -104,14 +104,30 @@ const Sariel = () => {
 
   useFrame(({ clock, camera }, dt) => {
     const s = crypt.get();
-    const want = ['sariel', 'talk', 'leaving'].includes(s.stage) ? 1 : 0;
+    const want = ['sariel', 'talk', 'follow', 'leaving'].includes(s.stage) ? 1 : 0;
     k.current = THREE.MathUtils.damp(k.current, want, 1.4, dt);
     if (!root.current) return;
     root.current.visible = k.current > 0.01;
-    root.current.position.y = (1 - k.current) * -0.3;
-    const dx = camera.position.x - SARIEL_SPOT.x;
-    const dz = camera.position.z - SARIEL_SPOT.z;
-    root.current.rotation.y = THREE.MathUtils.damp(root.current.rotation.y, Math.atan2(dx, dz), 2, dt);
+    const p = root.current.position;
+    let face = Math.atan2(camera.position.x - p.x, camera.position.z - p.z);
+    let walking = false;
+    if (s.stage === 'follow' || s.stage === 'leaving') {
+      const tx = p.z > -6 ? 0 : GATE.x + 0.6;
+      const tz = p.z > -6 ? -6 : GATE.z + 1.4;
+      const dx = tx - p.x;
+      const dz = tz - p.z;
+      const d = Math.hypot(dx, dz);
+      const lead = Math.hypot(camera.position.x - p.x, camera.position.z - p.z);
+      if (d > 0.15 && lead < 6) {
+        const step = Math.min(d, dt * 1.5);
+        p.x += (dx / d) * step;
+        p.z += (dz / d) * step;
+        face = Math.atan2(dx, dz);
+        walking = true;
+      }
+    }
+    p.y = (1 - k.current) * -0.3 + (walking ? Math.abs(Math.sin(clock.elapsedTime * 6)) * 0.03 : 0);
+    root.current.rotation.y = THREE.MathUtils.damp(root.current.rotation.y, face, walking ? 5 : 2, dt);
     if (bell.current) bell.current.rotation.z = Math.sin(clock.elapsedTime * 2.2) * 0.15;
   });
 

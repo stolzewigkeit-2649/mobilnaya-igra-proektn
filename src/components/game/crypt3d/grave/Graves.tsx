@@ -1,4 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { crypt } from '@/components/game/crypt3d/crypt-store';
 import * as THREE from 'three';
 import { usePbr } from '@/components/game/crypt3d/materials';
 import { GRAVES, TREES, AREA, type Grave } from '@/components/game/crypt3d/grave/grave-layout';
@@ -82,7 +84,8 @@ const Fence = ({ iron }: { iron: THREE.Material }) => {
   const posts = useMemo(() => {
     const out: [number, number, number][] = [];
     for (let t = -AREA; t <= AREA; t += 0.35) {
-      out.push([t, 0, -AREA], [-AREA, 0, t], [AREA, 0, t]);
+      if (Math.abs(t) > 1.2) out.push([t, 0, -AREA]);
+      out.push([-AREA, 0, t], [AREA, 0, t]);
     }
     return out;
   }, []);
@@ -95,9 +98,11 @@ const Fence = ({ iron }: { iron: THREE.Material }) => {
       ))}
       {[0.25, 1.35].map((y) => (
         <group key={y}>
-          <mesh material={iron} position={[0, y, -AREA]}>
-            <boxGeometry args={[AREA * 2, 0.03, 0.03]} />
-          </mesh>
+          {[-1, 1].map((sx) => (
+            <mesh key={sx} material={iron} position={[sx * (AREA + 1.2) / 2, y, -AREA]}>
+              <boxGeometry args={[AREA - 1.2, 0.03, 0.03]} />
+            </mesh>
+          ))}
           <mesh material={iron} position={[-AREA, y, 0]}>
             <boxGeometry args={[0.03, 0.03, AREA * 2]} />
           </mesh>
@@ -106,6 +111,61 @@ const Fence = ({ iron }: { iron: THREE.Material }) => {
           </mesh>
         </group>
       ))}
+    </group>
+  );
+};
+
+const Gate = ({ iron, stone }: { iron: THREE.Material; stone: THREE.Material }) => {
+  const left = useRef<THREE.Group>(null);
+  const right = useRef<THREE.Group>(null);
+  const lamp = useRef<THREE.PointLight>(null);
+  const open = useRef(0);
+  const bars = useMemo(() => Array.from({ length: 6 }, (_, i) => 0.08 + i * 0.17), []);
+  useFrame(({ clock }, dt) => {
+    const s = crypt.get().stage;
+    open.current = THREE.MathUtils.damp(open.current, s === 'follow' || s === 'leaving' ? 1 : 0, 1.2, dt);
+    if (left.current) left.current.rotation.y = -open.current * 1.6;
+    if (right.current) right.current.rotation.y = open.current * 1.6;
+    if (lamp.current) lamp.current.intensity = 1.6 + Math.sin(clock.elapsedTime * 9) * 0.25 + Math.random() * 0.15 + (s === 'follow' ? 1.2 : 0);
+  });
+  const leaf = (sx: number) => (
+    <group>
+      {bars.map((x) => (
+        <mesh key={x} material={iron} position={[sx * x, 0.9, 0]}>
+          <cylinderGeometry args={[0.018, 0.018, 1.8, 5]} />
+        </mesh>
+      ))}
+      {[0.3, 1.0, 1.7].map((y) => (
+        <mesh key={y} material={iron} position={[sx * 0.52, y, 0]}>
+          <boxGeometry args={[1.04, 0.04, 0.04]} />
+        </mesh>
+      ))}
+      {bars.map((x) => (
+        <mesh key={'t' + x} material={iron} position={[sx * x, 1.86, 0]}>
+          <coneGeometry args={[0.03, 0.1, 4]} />
+        </mesh>
+      ))}
+    </group>
+  );
+  return (
+    <group position={[0, 0, -AREA]}>
+      {[-1.2, 1.2].map((x) => (
+        <mesh key={x} material={stone} position={[x, 1.1, 0]} castShadow>
+          <boxGeometry args={[0.32, 2.2, 0.32]} />
+        </mesh>
+      ))}
+      {[-1.2, 1.2].map((x) => (
+        <mesh key={'c' + x} material={stone} position={[x, 2.3, 0]}>
+          <sphereGeometry args={[0.17, 12, 10]} />
+        </mesh>
+      ))}
+      <group ref={left} position={[-1.05, 0, 0]}>{leaf(1)}</group>
+      <group ref={right} position={[1.05, 0, 0]}>{leaf(-1)}</group>
+      <mesh position={[1.2, 1.9, 0.22]}>
+        <boxGeometry args={[0.12, 0.18, 0.12]} />
+        <meshStandardMaterial color="#ffcf80" emissive="#ff9a3a" emissiveIntensity={2} toneMapped={false} />
+      </mesh>
+      <pointLight ref={lamp} position={[1.2, 1.9, 0.6]} color="#ffae5a" distance={7} decay={1.8} />
     </group>
   );
 };
@@ -125,6 +185,7 @@ const Graves = () => {
         <Tree key={i} {...t} bark={bark} />
       ))}
       <Fence iron={iron} />
+      <Gate iron={iron} stone={stone} />
     </group>
   );
 };

@@ -27,7 +27,7 @@ const GravePlayer = () => {
     const dt = Math.min(rawDt, 0.05);
     const s = crypt.get();
     const busy = s.lines.length > 0 || s.choices.length > 0 || s.paused;
-    const free = !busy && ['walk', 'sariel'].includes(s.stage);
+    const free = !busy && ['walk', 'sariel', 'follow'].includes(s.stage);
 
     if (!s.paused && !s.choices.length) {
       yaw.current -= input.look.dx * 0.0022;

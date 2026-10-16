@@ -37,7 +37,7 @@ const Grass = () => {
     for (let i = 0; i < GRASS; i++) {
       let x = (Math.random() - 0.5) * AREA * 1.8;
       let z = (Math.random() - 0.5) * AREA * 1.8;
-      if (Math.abs(x) < 1.1 && z > -3) x += Math.sign(x || 1) * 1.2;
+      if (Math.abs(x) < 1.1) x += Math.sign(x || 1) * 1.2;
       if (Math.hypot(x - CRYPT_DOOR.x, z - CRYPT_DOOR.z) < 1.4) z -= 1.5;
       o.position.set(x, 0, z);
       o.rotation.set(0, Math.random() * Math.PI, 0);
@@ -60,7 +60,7 @@ const Grass = () => {
 
 const Terrain = ({ lowQuality }: { lowQuality: boolean }) => {
   const ground = usePbr('forrest_ground_01', [14, 14], { tint: '#7d8a86', normal: 1.6 });
-  const path = usePbr('cobblestone_floor_08', [1.2, 6], { tint: '#6d7476', normal: 1.3 });
+  const path = usePbr('cobblestone_floor_08', [1.2, 11], { tint: '#6d7476', normal: 1.3 });
   const wall = usePbr('castle_brick_07', [2, 1], { tint: '#7f8789' });
 
   const groundGeo = useMemo(() => {
@@ -80,8 +80,8 @@ const Terrain = ({ lowQuality }: { lowQuality: boolean }) => {
   return (
     <group>
       <mesh geometry={groundGeo} material={ground} rotation={[-Math.PI / 2, 0, 0]} receiveShadow />
-      <mesh material={path} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 3]} receiveShadow>
-        <planeGeometry args={[1.6, 13]} />
+      <mesh material={path} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, -2.6]} receiveShadow>
+        <planeGeometry args={[1.6, 24.4]} />
       </mesh>
       {!lowQuality && <Grass />}
 

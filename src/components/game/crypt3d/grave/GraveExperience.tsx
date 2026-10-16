@@ -11,7 +11,7 @@ import { cycleHands } from '@/components/game/crypt3d/hands/hand-state';
 
 type Props = { onComplete: (r: GraveResult | null) => void; onExit: () => void; volume?: number };
 
-const FREE = ['walk', 'sariel'];
+const FREE = ['walk', 'sariel', 'follow'];
 
 const GraveExperience = ({ onComplete, onExit, volume = 0.8 }: Props) => {
   const stage = useCrypt((s) => s.stage);

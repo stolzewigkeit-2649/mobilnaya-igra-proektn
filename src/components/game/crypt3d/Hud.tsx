@@ -8,6 +8,9 @@ const WHO: Record<Line['who'], { name: string; color: string }> = {
   hero: { name: 'Ты', color: '#9fe0b4' },
   soul: { name: 'Душа', color: '#a8c8ff' },
   sariel: { name: 'Сариэл', color: '#d6deff' },
+  preacher: { name: 'Проповедник', color: '#f2e6b8' },
+  villager: { name: 'Жительница', color: '#d8c89a' },
+  widower: { name: 'Старик-вдовец', color: '#c9b79a' },
   note: { name: '', color: '' },
 };
 

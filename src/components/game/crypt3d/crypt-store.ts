@@ -11,9 +11,10 @@ export type Stage =
   | 'walk'
   | 'soul'
   | 'sariel'
-  | 'talk';
+  | 'talk'
+  | 'follow';
 
-export type Line = { who: 'hecate' | 'hero' | 'note' | 'soul' | 'sariel'; text: string };
+export type Line = { who: 'hecate' | 'hero' | 'note' | 'soul' | 'sariel' | 'preacher' | 'villager' | 'widower'; text: string };
 export type Choice = { id: string; label: string; hint?: string };
 export type Card = { kicker: string; title: string; text: string; icon: string; color: string };
 

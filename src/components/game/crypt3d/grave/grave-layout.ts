@@ -7,6 +7,7 @@ export const START = { pos: new THREE.Vector3(0, 1.65, 8.2), yaw: 0 };
 export const BODY = new THREE.Vector3(0.9, 0, 1.6);
 export const SARIEL_SPOT = new THREE.Vector3(-2.6, 0, -2.4);
 export const SARIEL_SEAT = new THREE.Vector3(-2.6, 0, -2.4);
+export const GATE = new THREE.Vector3(0, 0, -14.6);
 export const MOON_DIR = new THREE.Vector3(-0.45, 0.62, -1).normalize();
 
 function rand(seed: number) {
@@ -24,7 +25,7 @@ export const GRAVES: Grave[] = (() => {
       i++;
       const x = gx + (rand(i) - 0.5) * 0.9;
       const z = gz + (rand(i + 50) - 0.5) * 0.9;
-      if (Math.abs(x) < 1.6 && z > -3) continue;
+      if (Math.abs(x) < 1.6) continue;
       if (Math.hypot(x - BODY.x, z - BODY.z) < 2.2) continue;
       if (Math.hypot(x - SARIEL_SPOT.x, z - SARIEL_SPOT.z) < 1.6) continue;
       if (rand(i + 9) < 0.18) continue;
@@ -63,6 +64,7 @@ export function collide(p: THREE.Vector3) {
   for (const t of TREES) push(p, t.x, t.z, 0.4 * t.s + PAD);
   push(p, BODY.x, BODY.z, 0.55);
   push(p, SARIEL_SEAT.x, SARIEL_SEAT.z, 0.75);
+  if (Math.abs(p.x) < 1.1) p.z = Math.max(p.z, -AREA + 0.7);
 }
 
 function push(p: THREE.Vector3, x: number, z: number, r: number) {

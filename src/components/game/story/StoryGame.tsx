@@ -11,6 +11,7 @@ import { useGameSettings } from '@/hooks/use-game-settings';
 const CryptExperience = lazy(() => import('@/components/game/crypt3d/CryptExperience'));
 const GraveExperience = lazy(() => import('@/components/game/crypt3d/grave/GraveExperience'));
 const CellarExperience = lazy(() => import('@/components/game/crypt3d/cellar/CellarExperience'));
+const VillageExperience = lazy(() => import('@/components/game/crypt3d/village/VillageExperience'));
 import { CHAPTER_TITLE, SCENE_TOTAL } from '@/data/story';
 import { useStory } from '@/hooks/use-story';
 import { useCharacter } from '@/hooks/use-character';
@@ -29,7 +30,7 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
   const heroName = archetype?.name.trim() || null;
   const story = useStory({ difficulty, faction: character.faction });
   const [confirm, setConfirm] = useState(false);
-  const [in3d, setIn3d] = useState<null | 'crypt' | 'grave' | 'cellar'>(null);
+  const [in3d, setIn3d] = useState<null | 'crypt' | 'grave' | 'cellar' | 'village'>(null);
   const { settings } = useGameSettings();
   const top = useRef<HTMLDivElement>(null);
 
@@ -124,6 +125,10 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
         <CryptInvite kind="grave" onEnter={() => setIn3d('grave')} onText={() => story.addFlag('grave3d-done')} />
       )}
 
+      {['c1-village', 'c1-investigate'].includes(story.scene.id) && !story.state.flags.includes('village3d-done') && !in3d && (
+        <CryptInvite kind="village" onEnter={() => setIn3d('village')} onText={() => story.addFlag('village3d-done')} />
+      )}
+
       {story.scene.id === 'c1-chapel' && !story.state.flags.includes('cellar3d-done') && !in3d && (
         <CryptInvite kind="cellar" onEnter={() => setIn3d('cellar')} onText={() => story.addFlag('cellar3d-done')} />
       )}
@@ -143,6 +148,27 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
               onComplete={() => {
                 setIn3d(null);
                 story.jumpTo('p-first-soul', { flags: ['crypt3d-done'], skipped: ['p-hekate'] });
+              }}
+            />
+          ) : in3d === 'village' ? (
+            <VillageExperience
+              volume={(settings.master / 100) * 0.9}
+              onExit={() => setIn3d(null)}
+              onComplete={(r) => {
+                if (!r || !r.done) {
+                  setIn3d(null);
+                  story.addFlag('village3d-done');
+                  return;
+                }
+                story.jumpTo('c1-chapel', {
+                  flags: ['village3d-done', ...r.flags],
+                  sanity: r.sanity,
+                  health: r.health,
+                  evidence: r.evidence,
+                  rep: r.rep,
+                  skipped: ['c1-village', 'c1-investigate'],
+                });
+                setIn3d('cellar');
               }}
             />
           ) : in3d === 'cellar' ? (
@@ -168,8 +194,8 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
               volume={(settings.master / 100) * 0.9}
               onExit={() => setIn3d(null)}
               onComplete={(r) => {
-                setIn3d(null);
                 if (!r) {
+                  setIn3d(null);
                   story.addFlag('grave3d-done');
                   return;
                 }
@@ -178,6 +204,7 @@ const StoryGame = ({ difficulty, onExit }: StoryGameProps) => {
                   sanity: r.sanity,
                   skipped: ['p-soul-speaks', 'p-sariel'],
                 });
+                setIn3d('village');
               }}
             />
           )}

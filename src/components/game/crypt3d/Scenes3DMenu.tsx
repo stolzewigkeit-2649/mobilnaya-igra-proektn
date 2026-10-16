@@ -5,13 +5,15 @@ import { useGameSettings } from '@/hooks/use-game-settings';
 
 const CryptExperience = lazy(() => import('@/components/game/crypt3d/CryptExperience'));
 const GraveExperience = lazy(() => import('@/components/game/crypt3d/grave/GraveExperience'));
+const VillageExperience = lazy(() => import('@/components/game/crypt3d/village/VillageExperience'));
 const CellarExperience = lazy(() => import('@/components/game/crypt3d/cellar/CellarExperience'));
 
-type Kind = 'crypt' | 'grave' | 'cellar';
+type Kind = 'crypt' | 'grave' | 'village' | 'cellar';
 
 const SCENES: { id: Kind; art: string; kicker: string; title: string; text: string; time: string; color: string }[] = [
   { id: 'crypt', art: 'p-awaken', kicker: 'Пролог', title: 'Склеп', text: 'Пробуждение на алтаре и встреча с Гекатой', time: '3–5 мин', color: '#7fb0ff' },
   { id: 'grave', art: 'p-sariel', kicker: 'Пролог', title: 'Кладбище', text: 'Первая душа, белый лоскут и Сариэл Лунный', time: '5–7 мин', color: '#b9c8ff' },
+  { id: 'village', art: 'c1-village', kicker: 'Глава 1', title: 'Деревня', text: 'Белые ленты, амбар с телами и проповедник', time: '7–10 мин', color: '#d8c89a' },
   { id: 'cellar', art: 'c1-chapel', kicker: 'Глава 1', title: 'Подвал', text: 'Клетки, ритуальные круги и списки имён', time: '5–8 мин', color: '#d07a5f' },
 ];
 
@@ -30,7 +32,7 @@ const Scenes3DMenu = () => {
         <span className="text-[0.62rem] text-muted-foreground">не влияют на сюжет</span>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {SCENES.map((s) => (
           <button
             key={s.id}
@@ -79,6 +81,7 @@ const Scenes3DMenu = () => {
         >
           {open === 'crypt' && <CryptExperience volume={volume} onComplete={close} onExit={close} />}
           {open === 'grave' && <GraveExperience volume={volume} onComplete={close} onExit={close} />}
+          {open === 'village' && <VillageExperience volume={volume} onComplete={close} onExit={close} />}
           {open === 'cellar' && <CellarExperience volume={volume} onComplete={close} onExit={close} />}
         </Suspense>
       )}
