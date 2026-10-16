@@ -11,6 +11,9 @@ import HeroBody from '@/components/game/crypt3d/HeroBody';
 import Player from '@/components/game/crypt3d/Player';
 import { crypt } from '@/components/game/crypt3d/crypt-store';
 import { HALF_D, DOOR } from '@/components/game/crypt3d/layout';
+import CinematicFX from '@/components/game/crypt3d/fx/CinematicFX';
+import LightShafts from '@/components/game/crypt3d/fx/LightShafts';
+import Dust from '@/components/game/crypt3d/fx/Dust';
 
 const Lighting = () => {
   const exitLight = useRef<THREE.SpotLight>(null);
@@ -99,6 +102,15 @@ const CryptScene = ({ onExitReached, onReady }: { onExitReached: () => void; onR
       </mesh>
       <Player onExitReached={onExitReached} />
       <HeroBody />
+      <LightShafts
+        shafts={[
+          { from: [0.3, 5.2, 0.4], to: [0, 0, 0.6], r0: 0.25, r1: 1.1, color: '#8fb4ff', opacity: 0.22 },
+          { from: [-2.2, 5.0, -4.6], to: [-1.6, 0, -4.2], r0: 0.15, r1: 0.7, color: '#7c9ee8', opacity: 0.14 },
+          { from: [0, 4.2, -9.6], to: [0, 0, -6.4], r0: 0.5, r1: 1.4, color: '#d6c7a3', opacity: 0.12 },
+        ]}
+      />
+      <Dust count={low ? 150 : 380} area={[9, 4.2, 15]} color="#bcd0ff" />
+      <CinematicFX ao={2.4} bloom={1.0} />
     </>
   );
 };

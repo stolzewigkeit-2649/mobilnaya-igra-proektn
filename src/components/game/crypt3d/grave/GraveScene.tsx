@@ -11,6 +11,9 @@ import FirstPersonHands from '@/components/game/crypt3d/hands/FirstPersonHands';
 import { MOON_DIR } from '@/components/game/crypt3d/grave/grave-layout';
 import { glowTexture } from '@/components/game/crypt3d/glow';
 import { crypt } from '@/components/game/crypt3d/crypt-store';
+import CinematicFX from '@/components/game/crypt3d/fx/CinematicFX';
+import LightShafts from '@/components/game/crypt3d/fx/LightShafts';
+import Dust from '@/components/game/crypt3d/fx/Dust';
 
 const MOON_COLOR = new THREE.Color('#b9c8ff');
 
@@ -113,6 +116,15 @@ const GraveScene = ({ onReady }: { onReady: () => void }) => {
       <Sparkles count={low ? 40 : 110} scale={[24, 3, 24]} position={[0, 1.4, 0]} size={1.3} speed={0.15} opacity={0.3} color="#b9c8ff" />
       <GravePlayer />
       <FirstPersonHands />
+      <LightShafts
+        shafts={[
+          { from: [-9, 14, -18], to: [0.9, 0, 1.6], r0: 0.4, r1: 2.0, color: '#a9bcff', opacity: 0.14 },
+          { from: [-12, 14, -20], to: [-2.6, 0, -2.4], r0: 0.3, r1: 1.6, color: '#a9bcff', opacity: 0.1 },
+          { from: [-6, 14, -22], to: [4, 0, -6], r0: 0.3, r1: 1.4, color: '#a9bcff', opacity: 0.08 },
+        ]}
+      />
+      <Dust count={low ? 120 : 300} area={[24, 3.5, 24]} color="#c8d4ff" size={0.04} />
+      <CinematicFX ao={2.0} bloom={0.85} aoColor="#04060c" />
     </>
   );
 };

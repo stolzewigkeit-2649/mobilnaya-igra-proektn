@@ -12,7 +12,10 @@ import Timon from '@/components/game/crypt3d/companion/Timon';
 import { collide } from '@/components/game/crypt3d/cellar/cellar-layout';
 import FirstPersonHands from '@/components/game/crypt3d/hands/FirstPersonHands';
 
-import { ROOM } from '@/components/game/crypt3d/cellar/cellar-layout';
+import { ROOM, STAIRS, HD } from '@/components/game/crypt3d/cellar/cellar-layout';
+import CinematicFX from '@/components/game/crypt3d/fx/CinematicFX';
+import LightShafts from '@/components/game/crypt3d/fx/LightShafts';
+import Dust from '@/components/game/crypt3d/fx/Dust';
 
 const Setup = () => {
   const gl = useThree((s) => s.gl);
@@ -54,7 +57,15 @@ const CellarScene = ({ onReady }: { onReady: () => void }) => {
       <Sparkles count={low ? 30 : 90} scale={[7, ROOM.h, 10]} position={[0, ROOM.h / 2, 0]} size={1.2} speed={0.1} opacity={0.3} color="#d8b890" />
       <CellarPlayer />
       <Timon collide={collide} />
-      <FirstPersonHands sleeve="#1b1714" />
+      <FirstPersonHands />
+      <LightShafts
+        shafts={[
+          { from: [STAIRS.x, ROOM.h + 0.6, STAIRS.z + 0.3], to: [STAIRS.x, 0, STAIRS.z - 1.2], r0: 0.35, r1: 0.9, color: '#ffd9a0', opacity: 0.2 },
+          { from: [0, ROOM.h, -HD + 0.6], to: [0, 0, -HD + 1.4], r0: 0.12, r1: 0.6, color: '#ffcf90', opacity: 0.1 },
+        ]}
+      />
+      <Dust count={low ? 120 : 260} area={[7, ROOM.h, 10]} color="#ffd8b0" size={0.03} />
+      <CinematicFX ao={2.6} bloom={0.9} />
     </>
   );
 };

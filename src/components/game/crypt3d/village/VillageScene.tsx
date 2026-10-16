@@ -11,6 +11,9 @@ import VillagePlayer from '@/components/game/crypt3d/village/VillagePlayer';
 import Timon from '@/components/game/crypt3d/companion/Timon';
 import FirstPersonHands from '@/components/game/crypt3d/hands/FirstPersonHands';
 import { AREA, collide } from '@/components/game/crypt3d/village/village-layout';
+import CinematicFX from '@/components/game/crypt3d/fx/CinematicFX';
+import LightShafts from '@/components/game/crypt3d/fx/LightShafts';
+import Dust from '@/components/game/crypt3d/fx/Dust';
 
 const MOON = new THREE.Vector3(0.5, 0.55, -1).normalize();
 
@@ -165,7 +168,16 @@ const VillageScene = ({ onReady }: { onReady: () => void }) => {
       {!low && <Smoke />}
       <VillagePlayer />
       <Timon collide={collide} />
-      <FirstPersonHands sleeve="#1b1714" />
+      <FirstPersonHands />
+      <LightShafts
+        shafts={[
+          { from: [0, 3.0, -4.8], to: [0, 0, -1.6], r0: 0.55, r1: 1.6, color: '#ffc27a', opacity: 0.16 },
+          { from: [6.3, 2.4, 1], to: [3.8, 0, 1], r0: 0.5, r1: 1.3, color: '#ffae5a', opacity: 0.14 },
+          { from: [12, 16, -18], to: [-1.6, 0, 2.2], r0: 0.4, r1: 2.4, color: '#c8c4e0', opacity: 0.07 },
+        ]}
+      />
+      <Dust count={low ? 120 : 280} area={[30, 4, 30]} color="#ffe2c0" size={0.04} />
+      <CinematicFX ao={2.2} bloom={0.95} />
     </>
   );
 };
