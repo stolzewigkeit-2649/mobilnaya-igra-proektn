@@ -26,11 +26,17 @@ const Kbd = ({ children }: { children: string }) => (
 );
 
 const KeysPanel = ({ rows = BASE_KEYS }: { rows?: KeyRow[] }) => {
-  const [open, setOpen] = useState(() => localStorage.getItem(KEY) !== '0');
+  const [open, setOpen] = useState(true);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem(KEY, open ? '1' : '0');
-  }, [open]);
+    setOpen(localStorage.getItem(KEY) !== '0');
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (loaded) localStorage.setItem(KEY, open ? '1' : '0');
+  }, [open, loaded]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

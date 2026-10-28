@@ -49,7 +49,7 @@ const GroundMist = ({ count = 34 }: { count?: number }) => {
   return (
     <group>
       {puffs.map((p, i) => (
-        <sprite key={i} ref={(s) => (refs.current[i] = s)} position={[p.x, p.y, p.z]} scale={[p.s, p.s * 0.45, 1]}>
+        <sprite key={i} ref={(s) => { refs.current[i] = s; }} position={[p.x, p.y, p.z]} scale={[p.s, p.s * 0.45, 1]}>
           <spriteMaterial map={tex} color="#8a9ab8" transparent opacity={p.o} depthWrite={false} />
         </sprite>
       ))}

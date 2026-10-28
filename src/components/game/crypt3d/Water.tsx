@@ -77,11 +77,11 @@ const Water = ({ reflect }: { reflect: boolean }) => {
       </mesh>
       {st.map((_, i) => (
         <group key={i}>
-          <mesh ref={(m) => (drops.current[i] = m)}>
+          <mesh ref={(m) => { drops.current[i] = m; }}>
             <sphereGeometry args={[0.012, 8, 8]} />
             <meshStandardMaterial color="#9fc4ff" emissive="#2b4f86" roughness={0} metalness={0.2} />
           </mesh>
-          <mesh ref={(m) => (rings.current[i] = m)} rotation={[-Math.PI / 2, 0, 0]}>
+          <mesh ref={(m) => { rings.current[i] = m; }} rotation={[-Math.PI / 2, 0, 0]}>
             <ringGeometry args={[0.92, 1, 48]} />
             <meshBasicMaterial color="#a8c8ff" transparent opacity={0} depthWrite={false} />
           </mesh>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import HeroCard, { type MenuKey } from '@/components/game/HeroCard';
 import GameDialog from '@/components/game/GameDialog';
 import PlayPanel from '@/components/game/PlayPanel';
@@ -21,7 +21,10 @@ const IndexScreen = ({ auth }: { auth: Auth }) => {
   const [screen, setScreen] = useState<ScreenKey>(null);
   const [back, setBack] = useState<ScreenKey>(null);
   const [story, setStory] = useState(false);
-  const [guest, setGuest] = useState(() => localStorage.getItem('rpv-guest') === '1');
+  const [guest, setGuest] = useState(false);
+  useEffect(() => {
+    if (localStorage.getItem('rpv-guest') === '1') setGuest(true);
+  }, []);
   const game = useGameSettings();
   const profile = useProfile();
   const hasSave = profile.story !== null;

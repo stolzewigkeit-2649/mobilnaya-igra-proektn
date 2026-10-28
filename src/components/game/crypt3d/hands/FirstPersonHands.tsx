@@ -74,7 +74,7 @@ const SoulFlame = ({ k }: { k: React.MutableRefObject<number> }) => {
         <spriteMaterial map={tex} color="#e6f2ff" transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
       </sprite>
       {[0, 1, 2, 3, 4].map((i) => (
-        <sprite key={i} ref={(o) => (wisps.current[i] = o)}>
+        <sprite key={i} ref={(o) => { wisps.current[i] = o; }}>
           <spriteMaterial map={tex} color="#7fb0ff" transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
         </sprite>
       ))}

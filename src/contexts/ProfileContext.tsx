@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode, type SetStateAction } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode, type SetStateAction } from 'react';
+import { DEFAULT_CHARACTER } from '@/data/character-model';
 import type { Player } from '@/hooks/use-auth';
 import type { Character } from '@/data/character-model';
 import type { ArchetypeChoice } from '@/data/archetypes';
@@ -26,16 +27,22 @@ type ProfileContextValue = {
 
 const ProfileContext = createContext<ProfileContextValue | null>(null);
 
+const EMPTY_PROFILE: ProfileData = { character: DEFAULT_CHARACTER, story: null, archetype: null };
+
 type ProfileProviderProps = { player: Player | null; children: ReactNode };
 
 export const ProfileProvider = ({ player, children }: ProfileProviderProps) => {
-  const [data, setData] = useState<ProfileData>(readLocalProfile);
+  const [data, setData] = useState<ProfileData>(EMPTY_PROFILE);
   const dataRef = useRef(data);
 
   const apply = useCallback((next: ProfileData) => {
     dataRef.current = next;
     setData(next);
   }, []);
+
+  useEffect(() => {
+    apply(readLocalProfile());
+  }, [apply]);
 
   const { status, lastSyncedAt, markDirty, flushNow } = useCloudSync(player, dataRef, apply);
 

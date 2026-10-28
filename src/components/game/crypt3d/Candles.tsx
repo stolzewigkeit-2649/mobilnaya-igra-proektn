@@ -60,18 +60,18 @@ const Candles = ({ lowQuality }: { lowQuality: boolean }) => {
             <meshStandardMaterial color={WAX} roughness={0.55} emissive="#24406e" emissiveIntensity={0.25} />
           </mesh>
           <mesh
-            ref={(m) => (cores.current[i] = m)}
+            ref={(m) => { cores.current[i] = m; }}
             position={[c.p[0], c.p[1] + c.h + 0.045, c.p[2]]}
           >
             <coneGeometry args={[0.018, 0.075, 8]} />
             <meshBasicMaterial color={FLAME_HOT} toneMapped={false} />
           </mesh>
-          <sprite ref={(s) => (flames.current[i] = s)}>
+          <sprite ref={(s) => { flames.current[i] = s; }}>
             <spriteMaterial map={glow} color={FLAME} transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
           </sprite>
           {c.light && (
             <pointLight
-              ref={(l) => (lights.current[i] = l)}
+              ref={(l) => { lights.current[i] = l; }}
               position={[c.p[0], c.p[1] + c.h + 0.15, c.p[2]]}
               color="#6fa8ff"
               distance={lowQuality ? 7 : 9}

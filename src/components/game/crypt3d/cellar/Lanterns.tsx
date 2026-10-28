@@ -44,7 +44,7 @@ const Lanterns = () => {
       {LIGHTS.map((l, i) => (
         <group key={i}>
           {l.hang ? (
-            <group ref={(g) => (swings.current[i] = g)} position={[l.p[0], ROOM.h - 0.24, l.p[2]]}>
+            <group ref={(g) => { swings.current[i] = g; }} position={[l.p[0], ROOM.h - 0.24, l.p[2]]}>
               <mesh material={iron} position={[0, -0.12, 0]}>
                 <cylinderGeometry args={[0.004, 0.004, 0.24, 4]} />
               </mesh>
@@ -71,11 +71,11 @@ const Lanterns = () => {
               </mesh>
             </group>
           )}
-          <sprite ref={(s) => (sprites.current[i] = s)} position={l.hang ? [l.p[0], ROOM.h - 0.55, l.p[2]] : [l.p[0], l.p[1] - 0.05, l.p[2]]}>
+          <sprite ref={(s) => { sprites.current[i] = s; }} position={l.hang ? [l.p[0], ROOM.h - 0.55, l.p[2]] : [l.p[0], l.p[1] - 0.05, l.p[2]]}>
             <spriteMaterial map={glow} color={FLAME} transparent depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
           </sprite>
           <pointLight
-            ref={(p) => (lights.current[i] = p)}
+            ref={(p) => { lights.current[i] = p; }}
             position={l.p}
             color="#ff9d55"
             distance={l.hang ? 8 : 4}

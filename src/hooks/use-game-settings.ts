@@ -49,23 +49,27 @@ export const DIFFICULTY_INFO: Record<
 };
 
 export function useGameSettings() {
-  const [settings, setSettings] = useState<GameSettings>(() => {
-    if (typeof window === 'undefined') return DEFAULTS;
-    try {
-      const raw = window.localStorage.getItem(KEY);
-      return raw ? { ...DEFAULTS, ...(JSON.parse(raw) as Partial<GameSettings>) } : DEFAULTS;
-    } catch {
-      return DEFAULTS;
-    }
-  });
+  const [settings, setSettings] = useState<GameSettings>(DEFAULTS);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(KEY);
+      if (raw) setSettings({ ...DEFAULTS, ...(JSON.parse(raw) as Partial<GameSettings>) });
+    } catch {
+      /* повреждённые данные — остаёмся на умолчаниях */
+    }
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
     try {
       window.localStorage.setItem(KEY, JSON.stringify(settings));
     } catch {
       /* приватный режим — просто не сохраняем */
     }
-  }, [settings]);
+  }, [settings, loaded]);
 
   const update = useCallback(<K extends keyof GameSettings>(key: K, value: GameSettings[K]) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
